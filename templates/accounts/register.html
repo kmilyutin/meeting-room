@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Регистрация - Booked!{% endblock %}
+
+{% block content %}
+<div class="page-shell">
+  <section class="auth-layout">
+    <div class="auth-heading">
+      <p class="eyebrow">Новый пользователь</p>
+      <h1 class="page-title">Регистрация</h1>
+      <p class="page-subtitle">Создайте аккаунт для будущего управления своими бронированиями.</p>
+    </div>
+
+    <div class="card auth-card">
+      <div class="card-body">
+        <form method="post" class="auth-form" novalidate>
+          {% csrf_token %}
+          {% for hidden in form.hidden_fields %}
+            {{ hidden }}
+          {% endfor %}
+
+          {% if form.non_field_errors %}
+            <div class="alert alert-danger" role="alert">
+              {% for error in form.non_field_errors %}
+                <div>{{ error }}</div>
+              {% endfor %}
+            </div>
+          {% endif %}
+
+          {% for field in form.visible_fields %}
+            <div class="mb-3">
+              <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+              {{ field }}
+              {% if field.help_text %}
+                <div class="form-text">{{ field.help_text|safe }}</div>
+              {% endif %}
+              {% for error in field.errors %}
+                <div class="invalid-feedback d-block">{{ error }}</div>
+              {% endfor %}
+            </div>
+          {% endfor %}
+
+          <button class="btn btn-primary w-100" type="submit">Зарегистрироваться</button>
+        </form>
+      </div>
+      <div class="card-footer auth-card__footer">
+        <span>Уже есть аккаунт?</span>
+        <a href="{% url 'login' %}">Войти</a>
+      </div>
+    </div>
+  </section>
+</div>
+{% endblock %}

@@ -1,0 +1,57 @@
+{% load static %}
+
+<article class="card room-card h-100">
+  <div class="room-card__visual">
+    {% if room.image_url %}
+      <img src="{{ room.image_url }}" alt="{{ room.name|default:'Переговорная' }}">
+    {% else %}
+      <img src="{% static 'img/room-card-placeholder.svg' %}" alt="">
+    {% endif %}
+  </div>
+  <div class="card-body d-flex flex-column">
+    <div class="d-flex align-items-start justify-content-between gap-3 mb-2">
+      <h2 class="room-card__title">{{ room.name|default:"Переговорная" }}</h2>
+      <span class="badge {% if room.is_available == False %}badge-busy{% else %}badge-free{% endif %}">
+        {% if room.status_label %}
+          {{ room.status_label }}
+        {% elif room.is_available == False %}
+          Занято
+        {% else %}
+          Свободно
+        {% endif %}
+      </span>
+    </div>
+
+    <p class="room-card__capacity">До {{ room.capacity|default:"8" }} участников</p>
+    <p class="room-card__description">{{ room.description|default:"Комната для встреч, созвонов и командной работы." }}</p>
+
+    <div class="room-card__equipment" aria-label="Оборудование">
+      {% if room.equipment.all %}
+        {% for item in room.equipment.all %}
+          <span class="badge badge-equipment">{{ item.name|default:item }}</span>
+        {% endfor %}
+      {% elif room.equipment %}
+        {% for item in room.equipment %}
+          <span class="badge badge-equipment">{{ item.name|default:item }}</span>
+        {% endfor %}
+      {% else %}
+        <span class="badge badge-equipment">Экран</span>
+        <span class="badge badge-equipment">Wi-Fi</span>
+      {% endif %}
+    </div>
+
+    <div class="room-card__actions mt-auto">
+      {% if room.get_absolute_url %}
+        <a class="btn btn-outline-light btn-sm" href="{{ room.get_absolute_url }}">Подробнее</a>
+      {% else %}
+        <a class="btn btn-outline-light btn-sm disabled" href="#" tabindex="-1" aria-disabled="true">Подробнее</a>
+      {% endif %}
+
+      {% if room.booking_url %}
+        <a class="btn btn-primary btn-sm" href="{{ room.booking_url }}">Забронировать</a>
+      {% else %}
+        <a class="btn btn-primary btn-sm disabled" href="#" tabindex="-1" aria-disabled="true">Забронировать</a>
+      {% endif %}
+    </div>
+  </div>
+</article>

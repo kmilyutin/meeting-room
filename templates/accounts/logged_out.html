@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Выход - Booked!{% endblock %}
+
+{% block content %}
+<div class="page-shell">
+  <section class="auth-layout">
+    <div class="card auth-card text-center">
+      <div class="card-body">
+        <p class="eyebrow mb-2">Сессия завершена</p>
+        <h1 class="page-title mb-3">Вы вышли из аккаунта</h1>
+        <p class="page-subtitle mb-4">Можно продолжить поиск переговорной как гость или снова войти.</p>
+        <div class="d-grid gap-2">
+          <a class="btn btn-primary" href="{% url 'login' %}">Войти снова</a>
+          <a class="btn btn-outline-light" href="{% url 'room_search' %}">Перейти к поиску</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+{% endblock %}

@@ -1,0 +1,12 @@
+{% load static %}
+
+<div class="empty-state">
+  <img class="empty-state__image" src="{% static 'img/empty-bookings.svg' %}" alt="">
+  <div>
+    <h2 class="empty-state__title">{{ title|default:"Пока пусто" }}</h2>
+    <p class="empty-state__text">{{ description|default:"Здесь появятся данные после подключения backend-части." }}</p>
+    {% if action_url %}
+      <a class="btn btn-outline-light" href="{{ action_url }}">{{ action_label|default:"Обновить" }}</a>
+    {% endif %}
+  </div>
+</div>

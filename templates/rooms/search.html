@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Поиск переговорной - Booked!{% endblock %}
+
+{% block content %}
+<div class="page-shell">
+  <header class="page-heading search-heading">
+    <div>
+      <p class="eyebrow">Переговорные</p>
+      <h1 class="page-title">Найти свободную переговорную</h1>
+      <p class="page-subtitle">Дата, время, длительность, участники и оборудование собраны в одной форме.</p>
+    </div>
+    {% if not user.is_authenticated %}
+      <a class="btn btn-outline-light" href="{% url 'login' %}">Войти для бронирования</a>
+    {% endif %}
+  </header>
+
+  <form class="search-panel" method="get" action="{% url 'room_search' %}">
+    <div class="row g-3">
+      <div class="col-12 col-md-3">
+        <label class="form-label" for="search-date">Дата встречи</label>
+        <input class="form-control" id="search-date" type="date" name="date" value="{{ request.GET.date }}">
+      </div>
+      <div class="col-12 col-md-3">
+        <label class="form-label" for="search-start-time">Время начала</label>
+        <input class="form-control" id="search-start-time" type="time" name="start_time" value="{{ request.GET.start_time }}">
+      </div>
+      <div class="col-12 col-md-3">
+        <label class="form-label" for="search-duration">Длительность</label>
+        <select class="form-select" id="search-duration" name="duration">
+          <option value="">Любая</option>
+          <option value="30" {% if selected_duration == "30" %}selected{% endif %}>30 минут</option>
+          <option value="60" {% if selected_duration == "60" %}selected{% endif %}>1 час</option>
+          <option value="90" {% if selected_duration == "90" %}selected{% endif %}>1,5 часа</option>
+          <option value="120" {% if selected_duration == "120" %}selected{% endif %}>2 часа</option>
+        </select>
+      </div>
+      <div class="col-12 col-md-3">
+        <label class="form-label" for="search-participants">Участники</label>
+        <input class="form-control" id="search-participants" type="number" min="1" name="participants" placeholder="Например, 6" value="{{ request.GET.participants }}">
+      </div>
+    </div>
+
+    <fieldset class="equipment-fieldset">
+      <legend class="form-label">Оборудование</legend>
+      <div class="equipment-options">
+        <label class="equipment-option">
+          <input class="form-check-input" type="checkbox" name="equipment" value="projector" {% if "projector" in selected_equipment %}checked{% endif %}>
+          <span>Проектор</span>
+        </label>
+        <label class="equipment-option">
+          <input class="form-check-input" type="checkbox" name="equipment" value="screen" {% if "screen" in selected_equipment %}checked{% endif %}>
+          <span>Экран</span>
+        </label>
+        <label class="equipment-option">
+          <input class="form-check-input" type="checkbox" name="equipment" value="whiteboard" {% if "whiteboard" in selected_equipment %}checked{% endif %}>
+          <span>Доска</span>
+        </label>
+        <label class="equipment-option">
+          <input class="form-check-input" type="checkbox" name="equipment" value="video" {% if "video" in selected_equipment %}checked{% endif %}>
+          <span>Видеосвязь</span>
+        </label>
+      </div>
+    </fieldset>
+
+    <div class="search-actions">
+      <button class="btn btn-primary" type="submit">Найти переговорную</button>
+      <a class="btn btn-outline-light" href="{% url 'room_search' %}">Сбросить</a>
+    </div>
+  </form>
+
+  <section class="results-section" id="rooms-preview" aria-labelledby="results-title">
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow">Результаты</p>
+        <h2 class="section-title" id="results-title">Подходящие комнаты</h2>
+      </div>
+    </div>
+
+    {% if rooms %}
+      <div class="room-grid">
+        {% for room in rooms %}
+          {% include "rooms/_room_card.html" with room=room %}
+        {% endfor %}
+      </div>
+    {% elif request.GET %}
+      {% url 'room_search' as search_url %}
+      {% include "rooms/_empty_state.html" with title="Подходящих комнат не найдено" description="Попробуйте изменить время, длительность, вместимость или набор оборудования." action_url=search_url action_label="Сбросить фильтры" %}
+    {% else %}
+      {% include "rooms/_empty_state.html" with title="Параметры еще не выбраны" description="После подключения backend-логики здесь появятся комнаты, подходящие под запрос." %}
+    {% endif %}
+  </section>
+</div>
+{% endblock %}
