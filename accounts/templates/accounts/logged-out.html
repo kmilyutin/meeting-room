@@ -1,4 +1,4 @@
-{% extends 'accounts/base.html' %}
+{% extends 'base.html' %}
 {% load static %}
 
 {% block main %}
@@ -13,7 +13,7 @@
                     </p>
                     <div class="d-grid gap-2">
                         <a class="btn btn-primary" href="{% url 'accounts:login' %}">Войти снова</a>
-                        <a class="btn btn-outline-light" href="{% url 'rooms:index' %}">Перейти к поиску</a>
+                        <a class="btn btn-outline" href="{% url 'rooms:index' %}">Перейти к поиску</a>
                     </div>
                 </div>
             </div>

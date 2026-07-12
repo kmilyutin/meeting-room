@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block main %}
+<main class="app-main">
+  <div class="page-shell">
+    <header class="page-heading">
+      <p class="eyebrow">Аккаунт</p>
+      <h1 class="page-title">Мой профиль</h1>
+      <p class="page-subtitle">Здесь можно изменить логин, почту и пароль.</p>
+    </header>
+
+    <div class="profile-layout">
+      <aside class="panel">
+        <h2 class="section-title">{{ user.username }}</h2>
+        <p class="profile-note">{{ user.email|default:"Email пока не указан" }}</p>
+        <p class="profile-note">После смены пароля активная сессия сохраняется.</p>
+      </aside>
+
+      <form class="card profile-card profile-form" method="post">
+        {% csrf_token %}
+        {% for field in form %}
+          <label class="field">
+            <span class="form-label">{{ field.label }}</span>
+            {{ field }}
+            {% for error in field.errors %}
+              <span class="invalid-feedback d-block">{{ error }}</span>
+            {% endfor %}
+          </label>
+        {% endfor %}
+        <div class="button-row">
+          <button class="btn btn-primary" type="submit">Сохранить профиль</button>
+          <a class="btn btn-outline" href="{% url 'rooms:index' %}">Отмена</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</main>
+{% endblock %}

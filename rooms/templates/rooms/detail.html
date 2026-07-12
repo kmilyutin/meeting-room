@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block main %}
+<main class="app-main">
+  <div class="page-shell">
+    <header class="page-heading">
+      <p class="eyebrow">Переговорная</p>
+      <h1 class="page-title">{{ room.name }}</h1>
+      <p class="page-subtitle">Подробная информация, изображение, характеристики и ближайшие брони.</p>
+    </header>
+
+    <div class="detail-layout">
+      <article class="card room-hero">
+        {% if room.image %}
+          <div class="room-hero__image"><img src="{{ room.image.url }}" alt="{{ room.name }}"></div>
+        {% else %}
+          <div class="room-hero__image" role="img" aria-label="{{ room.name }}"></div>
+        {% endif %}
+        <div class="room-hero__content">
+          <div class="room-card__top">
+            <h2 class="section-title">Информация о комнате</h2>
+            <span class="badge {% if room.display_status == 'available' %}badge-free{% elif room.display_status == 'busy' %}badge-busy{% else %}badge-unavailable{% endif %}">{{ room.display_status_label }}</span>
+          </div>
+          <p class="room-card__description">{{ room.description }}</p>
+          <div class="facts-grid">
+            <div class="fact"><div class="fact-value">{{ room.capacity }}</div><div>участников</div></div>
+            <div class="fact"><div class="fact-value">{{ room.equipment.count }}</div><div>единиц инвентаря</div></div>
+            <div class="fact"><div class="fact-value">{{ bookings.count }}</div><div>броней за день</div></div>
+          </div>
+          <div class="badge-list mt-24">
+            {% for item in room.equipment.all %}
+              <span class="badge badge-equipment">{{ item.name }}</span>
+            {% endfor %}
+          </div>
+          <div class="button-row">
+            {% if room.can_book %}
+              <a class="btn btn-primary" href="{% url 'rooms:book_room' room.pk %}{% if request.GET.urlencode %}?{{ request.GET.urlencode }}{% endif %}">Забронировать</a>
+            {% endif %}
+            <a class="btn btn-outline" href="{% url 'rooms:list' %}">Назад к списку</a>
+          </div>
+        </div>
+      </article>
+
+      <aside class="timeline">
+        <div>
+          <p class="eyebrow">Расписание</p>
+          <h2 class="section-title">{{ timeline_day|date:"d E" }}</h2>
+        </div>
+        {% for booking in bookings %}
+          <div class="timeline-row timeline-row_busy">
+            <span class="timeline-time">{{ booking.start_time|date:"H:i" }}</span>
+            <div>
+              <strong>{{ booking.name }}</strong>
+              <div class="timeline-room">до {{ booking.end_time|date:"H:i" }}</div>
+            </div>
+            <span class="badge badge-busy">Занято</span>
+          </div>
+        {% empty %}
+          <div class="timeline-row timeline-row_free">
+            <span class="timeline-time">09:00</span>
+            <div>
+              <strong>Свободно</strong>
+              <div class="timeline-room">броней на день нет</div>
+            </div>
+            <span class="badge badge-free">Свободно</span>
+          </div>
+        {% endfor %}
+      </aside>
+    </div>
+  </div>
+</main>
+{% endblock %}

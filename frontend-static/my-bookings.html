@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Мои бронирования - Booked!</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <nav class="app-navbar"><div class="page-shell app-navbar__inner"><a class="app-brand" href="index.html"><span class="app-brand__mark">B</span><span>Booked!</span></a><div class="nav-links"><a class="nav-link" href="index.html">Поиск</a><a class="nav-link" href="rooms.html">Переговорные</a><a class="nav-link active" href="my-bookings.html">Мои бронирования</a><a class="nav-link" href="profile.html">Мой профиль</a></div></div></nav>
+    <main class="app-main">
+      <div class="page-shell">
+        <header class="page-heading split-heading"><div><p class="eyebrow">Личный раздел</p><h1 class="page-title">Мои бронирования</h1><p class="page-subtitle">Продление доступно только если сразу после брони есть свободное окно.</p></div><a class="btn btn-primary" href="index.html">Новая бронь</a></header>
+        <section class="booking-list">
+          <article class="card booking-card">
+            <div class="booking-card__top"><h2 class="booking-card__title">Демо в Алтае</h2><span class="badge badge-free">Можно продлить</span></div>
+            <p class="booking-meta">13 июля, 10:00-11:00 · Алтай · 6 участников</p>
+            <div class="extend-box">
+              <strong>После встречи свободно до 12:00</strong>
+              <div class="button-row mt-24"><button class="btn btn-primary" type="button">Продлить на 30 минут</button><button class="btn btn-outline" type="button">Продлить до 12:00</button></div>
+            </div>
+          </article>
+          <article class="card booking-card">
+            <div class="booking-card__top"><h2 class="booking-card__title">Синк в Байкале</h2><span class="badge badge-busy">Без продления</span></div>
+            <p class="booking-meta">13 июля, 12:30-13:30 · Байкал · 10 участников</p>
+            <div class="extend-box extend-box_locked"><strong>Сразу после брони начинается другая встреча</strong><p class="booking-meta">Продление недоступно, выберите другое время через поиск.</p></div>
+          </article>
+        </section>
+      </div>
+    </main>
+    <footer class="app-footer"><div class="page-shell app-footer__inner"><span>Booked! - сервис бронирования переговорных</span><span class="app-footer__brand"><img class="app-footer__logo" src="img/logo.png" alt="">IVIsion</span></div></footer>
+  </div>
+</body>
+</html>

@@ -1,30 +1,23 @@
 from django.shortcuts import render, HttpResponseRedirect
 from django.contrib import auth, messages
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.views import LoginView
 from django.urls import reverse
 
-from accounts.models import User
-from accounts.forms import UserLoginForm, UserRegistrationForm
+from accounts.forms import ProfileForm, UserLoginForm, UserRegistrationForm
 
-def login(request):
-    if request.method == 'POST':
-        form = UserLoginForm(data=request.POST)
-        if form.is_valid():
-            username = request.POST['username']
-            password = request.POST['password']
-            user = auth.authenticate(username=username, password=password)
-            if user:
-                auth.login(request, user)
-                messages.success(request, 'Поздравляем! Вы успешно вошли в аккаунт!')
-                return HttpResponseRedirect(reverse('index'))
-    else:
-        form = UserLoginForm()
-    
-    context = {
+
+class UserLoginView(LoginView):
+    template_name = 'accounts/login.html'
+    authentication_form = UserLoginForm
+    extra_context = {
         'title': 'Вход - Booked!',
-        'form': form
     }
-        
-    return render(request, 'accounts/login.html', context)
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Поздравляем! Вы успешно вошли в аккаунт!')
+        return super().form_valid(form)
 
 def register(request):
     if request.method == 'POST':
@@ -49,3 +42,22 @@ def logout(request):
         'title': 'Выход - Booked!',
     }
     return render(request, 'accounts/logged-out.html', context)
+
+
+@login_required
+def profile(request):
+    if request.method == 'POST':
+        form = ProfileForm(request.POST, instance=request.user)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)
+            messages.success(request, 'Профиль обновлен.')
+            return HttpResponseRedirect(reverse('accounts:profile'))
+    else:
+        form = ProfileForm(instance=request.user)
+
+    context = {
+        'title': 'Мой профиль - Booked!',
+        'form': form,
+    }
+    return render(request, 'accounts/profile.html', context)

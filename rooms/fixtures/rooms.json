@@ -3,46 +3,36 @@
     "model": "rooms.room",
     "pk": 1,
     "fields": {
-      "name": "Переговорная «Алтай»",
+      "name": "Алтай",
       "capacity": 8,
       "description": "Комната для встреч, созвонов и командной работы.",
-      "image": "rooms_images/room-card-placeholder_axyYUnE.png",
+      "image": "rooms_images/room-card-placeholder.png",
       "status": "available",
-      "equipment": [
-        1,
-        2
-      ]
+      "equipment": [1, 2, 4]
     }
   },
   {
     "model": "rooms.room",
     "pk": 2,
     "fields": {
-      "name": "Переговорная «Байкал»",
+      "name": "Байкал",
       "capacity": 12,
       "description": "Просторная комната с проектором для презентаций.",
-      "image": "rooms_images/room-card-placeholder_S5z0v2V.png",
+      "image": "rooms_images/room-card-placeholder_1DVNKL5.png",
       "status": "busy",
-      "equipment": [
-        3,
-        4,
-        5
-      ]
+      "equipment": [3, 4, 5]
     }
   },
   {
     "model": "rooms.room",
     "pk": 3,
     "fields": {
-      "name": "Переговорная «Онега»",
-      "capacity": 4,
-      "description": "Переговорная «Онега»",
-      "image": "rooms_images/room-card-placeholder.png",
-      "status": "available",
-      "equipment": [
-        2,
-        5
-      ]
+      "name": "Север",
+      "capacity": 6,
+      "description": "Комната временно закрыта на обслуживание.",
+      "image": "rooms_images/room-card-placeholder_4WXfsmj.png",
+      "status": "unavailable",
+      "equipment": [2, 5]
     }
   }
 ]

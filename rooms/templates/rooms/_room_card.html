@@ -1,0 +1,32 @@
+<article class="card room-card">
+  {% if room.image %}
+    <div class="room-card__visual"><img src="{{ room.image.url }}" alt="{{ room.name }}"></div>
+  {% else %}
+    <div class="room-card__visual" role="img" aria-label="{{ room.name }}"></div>
+  {% endif %}
+  <div class="room-card__body">
+    <div class="room-card__top">
+      <h2 class="room-card__title">{{ room.name }}</h2>
+      <span class="badge {% if room.display_status == 'available' %}badge-free{% elif room.display_status == 'busy' %}badge-busy{% else %}badge-unavailable{% endif %}">
+        {{ room.display_status_label|default:room.get_status_display }}
+      </span>
+    </div>
+    <p class="room-card__capacity">До {{ room.capacity }} участников</p>
+    <p class="room-card__description">{{ room.description }}</p>
+    <div class="badge-list">
+      {% for item in room.equipment.all %}
+        <span class="badge badge-equipment">{{ item.name }}</span>
+      {% empty %}
+        <span class="badge badge-equipment">Нет инвентаря</span>
+      {% endfor %}
+    </div>
+    <div class="button-row mt-auto">
+      <a class="btn btn-outline" href="{{ room.get_absolute_url }}">Подробнее</a>
+      {% if room.can_book %}
+        <a class="btn btn-primary" href="{% url 'rooms:book_room' room.pk %}{% if request.GET.urlencode %}?{{ request.GET.urlencode }}{% endif %}">Забронировать</a>
+      {% else %}
+        <span class="btn btn-primary btn-disabled">Забронировать</span>
+      {% endif %}
+    </div>
+  </div>
+</article>

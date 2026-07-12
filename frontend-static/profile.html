@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Мой профиль - Booked!</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <nav class="app-navbar"><div class="page-shell app-navbar__inner"><a class="app-brand" href="index.html"><span class="app-brand__mark">B</span><span>Booked!</span></a><div class="nav-links"><a class="nav-link" href="index.html">Поиск</a><a class="nav-link" href="rooms.html">Переговорные</a><a class="nav-link" href="my-bookings.html">Мои бронирования</a><a class="nav-link active" href="profile.html">Мой профиль</a></div></div></nav>
+    <main class="app-main">
+      <div class="page-shell">
+        <header class="page-heading"><p class="eyebrow">Аккаунт</p><h1 class="page-title">Мой профиль</h1><p class="page-subtitle">Здесь пользователь меняет логин, почту и пароль.</p></header>
+        <div class="profile-layout">
+          <aside class="panel"><h2 class="section-title">sonya</h2><p class="profile-note">Зарегистрированный пользователь. Изменения профиля применяются после сохранения формы.</p></aside>
+          <form class="card profile-card profile-form">
+            <label class="field"><span class="form-label">Логин</span><input class="form-control" type="text" value="sonya"></label>
+            <label class="field"><span class="form-label">Email</span><input class="form-control" type="email" value="sonya@example.com"></label>
+            <label class="field"><span class="form-label">Новый пароль</span><input class="form-control" type="password" placeholder="Оставьте пустым, если не меняете"></label>
+            <label class="field"><span class="form-label">Повторите пароль</span><input class="form-control" type="password" placeholder="Повторите новый пароль"></label>
+            <div class="button-row"><button class="btn btn-primary" type="submit">Сохранить профиль</button><a class="btn btn-outline" href="index.html">Отмена</a></div>
+          </form>
+        </div>
+      </div>
+    </main>
+    <footer class="app-footer"><div class="page-shell app-footer__inner"><span>Booked! - сервис бронирования переговорных</span><span class="app-footer__brand"><img class="app-footer__logo" src="img/logo.png" alt="">IVIsion</span></div></footer>
+  </div>
+</body>
+</html>

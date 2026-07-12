@@ -1,4 +1,4 @@
-# Booked! >>>
+# Booked!
 
 Сервис для быстрого поиска и бронирования переговорных комнат.
 
@@ -18,17 +18,17 @@
 
 ### 3. **Запустить проект через Docker:**
    ```bash
-   Bashdocker-compose -f docker/docker-compose.yml up --build
+   docker-compose -f docker/docker-compose.yml up --build
    ```
 
 ### 4. **Выполнить миграции:**
    ```bash
-   Bashdocker-compose -f docker/docker-compose.yml exec web python manage.py migrate
+   docker-compose -f docker/docker-compose.yml exec web python manage.py migrate
    ```
 
 ### 5. **Создать суперпользователя:**
    ```bash
-   Bashdocker-compose -f docker/docker-compose.yml exec web python manage.py createsuperuser
+   docker-compose -f docker/docker-compose.yml exec web python manage.py createsuperuser
    ```
 
 ## Как запустить тесты

@@ -23,8 +23,7 @@ from rooms.views import index
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', index, name='index'),
-    path('rooms/', include('rooms.urls', namespace='rooms')),
+    path('', include('rooms.urls', namespace='rooms')),
     path('accounts/', include('accounts.urls', namespace='accounts')),
 ]
 
