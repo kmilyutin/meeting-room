@@ -68,7 +68,7 @@ def decorate_room(room, start_at=None, end_at=None):
 
 
 def get_equipment_choices():
-    return Equipment.objects.exclude(name__iexact='Видеосвязь').order_by('name')
+    return Equipment.objects.order_by('name')
 
 
 def get_timeline(day):
@@ -110,26 +110,50 @@ def get_timeline(day):
 
 def index(request):
     selected_date = parse_date(request.GET.get('date'))
-    start_at = make_dt(selected_date, request.GET.get('start_time'))
-    end_at = make_dt(selected_date, request.GET.get('end_time'))
+    start_raw = request.GET.get('start_time', '').strip()
+    end_raw = request.GET.get('end_time', '').strip()
+    participants_raw = request.GET.get('participants', '').strip()
     selected_equipment = request.GET.getlist('equipment')
     custom_equipment = request.GET.get('equipment_other', '').strip()
-    participants = request.GET.get('participants')
 
-    rooms = Room.objects.prefetch_related('equipment').all().order_by('name')
-    if participants:
-        try:
-            rooms = rooms.filter(capacity__gte=int(participants))
-        except ValueError:
-            pass
-    if selected_equipment:
+    errors = []
+    start_at = None
+    end_at = None
+    if start_raw or end_raw:
+        if not (start_raw and end_raw):
+            errors.append('Укажите и время начала, и время окончания.')
+        else:
+            start_at = make_dt(selected_date, start_raw)
+            end_at = make_dt(selected_date, end_raw)
+            if start_at is None or end_at is None:
+                errors.append('Время указано в неверном формате.')
+            elif end_at <= start_at:
+                errors.append('Время окончания должно быть позже времени начала.')
+
+    participants = None
+    if participants_raw:
+        if participants_raw.isdigit() and int(participants_raw) > 0:
+            participants = int(participants_raw)
+        else:
+            errors.append('Количество участников должно быть положительным числом.')
+
+    if errors:
+        for error in errors:
+            messages.error(request, error)
+        decorated_rooms = []
+    else:
+        rooms = Room.objects.prefetch_related('equipment').filter(status='available')
+        if participants:
+            rooms = rooms.filter(capacity__gte=participants)
         for item_name in selected_equipment:
             rooms = rooms.filter(equipment__name__iexact=item_name)
-    if custom_equipment:
-        rooms = rooms.filter(equipment__name__icontains=custom_equipment)
+        if custom_equipment:
+            rooms = rooms.filter(equipment__name__icontains=custom_equipment)
 
-    rooms = list(rooms.distinct())
-    decorated_rooms = [decorate_room(room, start_at, end_at) for room in rooms]
+        rooms = rooms.distinct().order_by('capacity', 'name')
+        decorated_rooms = [decorate_room(room, start_at, end_at) for room in rooms]
+        if start_at and end_at:
+            decorated_rooms = [room for room in decorated_rooms if room.can_book]
 
     context = {
         'title': 'Поиск переговорной - Booked!',
