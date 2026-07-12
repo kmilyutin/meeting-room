@@ -5,6 +5,6 @@ from .models import User
 @admin.register(User)
 class CustomUserAdmin(UserAdmin):
     list_display = ('username', 'email', 'is_staff', 'is_superuser')
-    list_filter = ('groups', 'is_staff')
+    list_filter = ('is_staff', 'is_superuser', 'groups') # Фильтры по правам
     search_fields = ('username', 'email')
     ordering = ('username',)
