@@ -23,7 +23,7 @@
     <div class="button-row mt-auto">
       <a class="btn btn-outline" href="{{ room.get_absolute_url }}">Подробнее</a>
       {% if room.can_book %}
-        <a class="btn btn-primary" href="{% url 'rooms:index' %}?room={{ room.pk }}">Забронировать</a>
+        <a class="btn btn-primary" href="{% url 'rooms:book_room' room.pk %}{% if request.GET.urlencode %}?{{ request.GET.urlencode }}{% endif %}">Забронировать</a>
       {% else %}
         <span class="btn btn-primary btn-disabled">Забронировать</span>
       {% endif %}

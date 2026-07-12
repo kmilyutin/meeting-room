@@ -34,7 +34,7 @@
           </div>
           <div class="button-row">
             {% if room.can_book %}
-              <a class="btn btn-primary" href="{% url 'rooms:index' %}?room={{ room.pk }}">Забронировать</a>
+              <a class="btn btn-primary" href="{% url 'rooms:book_room' room.pk %}{% if request.GET.urlencode %}?{{ request.GET.urlencode }}{% endif %}">Забронировать</a>
             {% endif %}
             <a class="btn btn-outline" href="{% url 'rooms:list' %}">Назад к списку</a>
           </div>

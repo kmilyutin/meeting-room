@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 
@@ -267,6 +268,21 @@ def room_detail(request, pk):
         'timeline_day': day,
     }
     return render(request, 'rooms/detail.html', context)
+
+
+@login_required
+def book_room(request, pk):
+    ensure_demo_data()
+    room = get_object_or_404(Room, pk=pk)
+
+    query = request.GET.copy()
+    query['room'] = room.pk
+    redirect_url = reverse('rooms:index')
+    if query:
+        redirect_url = f'{redirect_url}?{query.urlencode()}'
+
+    messages.info(request, f'Выберите дату и время для бронирования переговорной {room.name}.')
+    return redirect(redirect_url)
 
 
 def can_extend(booking):

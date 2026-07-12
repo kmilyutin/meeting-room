@@ -44,6 +44,9 @@
                 <div class="card-body">
                     <form action="{% url 'accounts:login' %}" method="post" class="auth-form" novalidate>
                         {% csrf_token %}
+                        {% if next %}
+                            <input type="hidden" name="next" value="{{ next }}">
+                        {% endif %}
                         <div class="mb-3">
                             <label class="form-label" for="{{ form.username.id_for_label }}">Имя пользователя</label>
                             {{ form.username }}

@@ -2,30 +2,22 @@ from django.shortcuts import render, HttpResponseRedirect
 from django.contrib import auth, messages
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.views import LoginView
 from django.urls import reverse
 
 from accounts.forms import ProfileForm, UserLoginForm, UserRegistrationForm
 
-def login(request):
-    if request.method == 'POST':
-        form = UserLoginForm(data=request.POST)
-        if form.is_valid():
-            username = request.POST['username']
-            password = request.POST['password']
-            user = auth.authenticate(username=username, password=password)
-            if user:
-                auth.login(request, user)
-                messages.success(request, 'Поздравляем! Вы успешно вошли в аккаунт!')
-                return HttpResponseRedirect(reverse('rooms:index'))
-    else:
-        form = UserLoginForm()
-    
-    context = {
+
+class UserLoginView(LoginView):
+    template_name = 'accounts/login.html'
+    authentication_form = UserLoginForm
+    extra_context = {
         'title': 'Вход - Booked!',
-        'form': form
     }
-        
-    return render(request, 'accounts/login.html', context)
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Поздравляем! Вы успешно вошли в аккаунт!')
+        return super().form_valid(form)
 
 def register(request):
     if request.method == 'POST':
