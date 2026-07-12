@@ -267,6 +267,22 @@ def edit_booking(request, pk):
     return render(request, 'rooms/booking_form.html', context)
 
 
+@login_required
+def delete_booking(request, pk):
+    booking = get_object_or_404(Booking.objects.select_related('room'), pk=pk, organizer=request.user)
+
+    if request.method == 'POST':
+        booking.delete()
+        messages.success(request, 'Бронь удалена.')
+        return redirect('rooms:my_bookings')
+
+    context = {
+        'title': 'Удаление брони - Booked!',
+        'booking': booking,
+    }
+    return render(request, 'rooms/booking_confirm_delete.html', context)
+
+
 def can_extend(booking):
     next_booking = Booking.objects.filter(
         room=booking.room,
