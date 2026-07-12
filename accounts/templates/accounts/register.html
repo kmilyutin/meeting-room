@@ -1,0 +1,46 @@
+{% extends 'accounts/base.html' %}
+{% load static %}
+
+{% block main %}
+<main class="app-main">
+    <div class="page-shell">
+        <section class="auth-layout">
+            <div class="auth-heading">
+                <p class="eyebrow">Новый пользователь</p>
+                <h1 class="page-title">Регистрация</h1>
+                <p class="page-subtitle">Создайте аккаунт для будущего управления своими бронированиями.</p>
+            </div>
+
+            <div class="card auth-card">
+                <div class="card-body">
+                    <form action="{% url 'accounts:register' %}" method="post" class="auth-form" novalidate>
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label" for="{{ form.username.id_for_label }}">Имя пользователя</label>
+                            {{ form.username }}
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="{{ form.email.id_for_label }}">Email</label>
+                            {{ form.email }}
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="{{ form.password1.id_for_label }}">Пароль</label>
+                            {{ form.password1 }}
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="{{ form.password2.id_for_label }}">Подтверждение пароля</label>
+                            {{ form.password2 }}
+                        </div>
+
+                        <button class="btn btn-primary w-100" type="submit">Зарегистрироваться</button>
+                    </form>
+                </div>
+                <div class="card-footer auth-card__footer">
+                    <span>Уже есть аккаунт?</span>
+                    <a href="{% url 'accounts:login' %}">Войти</a>
+                </div>
+            </div>
+        </section>
+    </div>
+</main>
+{% endblock %}

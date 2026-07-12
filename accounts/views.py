@@ -1,34 +1,47 @@
-from django.shortcuts import render, redirect
-from django.contrib.auth import login
-from django.views.generic.edit import CreateView
-from django.urls import reverse_lazy
+from django.shortcuts import render, HttpResponseRedirect
+from django.contrib import auth
+from django.urls import reverse
 
-from .forms import RegisterForm, LoginForm
+from accounts.models import User
+from accounts.forms import UserLoginForm, UserRegistrationForm
 
-def register_form(request):
+def login(request):
     if request.method == 'POST':
-        form = RegisterForm(request.POST)
+        form = UserLoginForm(data=request.POST)
         if form.is_valid():
-            user = form.save()
-            login(request, user)
-            return redirect('home')
+            username = request.POST['username']
+            password = request.POST['password']
+            user = auth.authenticate(username=username, password=password)
+            if user:
+                auth.login(request, user)
+                return HttpResponseRedirect(reverse('index'))
     else:
-        form = RegisterForm()
+        form = UserLoginForm()
+    
+    context = {
+        'title': 'Вход - Booked!',
+        'form': form
+    }
+        
+    return render(request, 'accounts/login.html', context)
 
-    return render(request, 'accounts/register.html', {'form': form})    
+def register(request):
+    if request.method == 'POST':
+        form = UserRegistrationForm(data=request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('accounts:login'))
+    else:
+        form = UserRegistrationForm()
+    
+    context = {
+        'title': 'Регистрация - Booked!',
+        'form': form
+    }
+    return render(request, 'accounts/register.html', context)
 
-def login_view(request):
-    pass
-
-class RegisterView(CreateView):
-    form_class = RegisterForm
-    template_name = 'accounts/register.html'
-    success_url = reverse_lazy('home')
-
-    def form_valid(self, form):
-        user = form.save()
-        group, created = Group.objects.get_or_create(name='registered_users')
-
-        user.groups.add(group)
-
-        return super().form_valid(form)
+def logout(request):
+    context = {
+        'title': 'Выход - Booked!',
+    }
+    return render(request, 'accounts/logged-out.html', context)

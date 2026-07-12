@@ -10,7 +10,7 @@
                 <h1 class="page-title">Найти свободную переговорную</h1>
                 <p class="page-subtitle">Дата, время, длительность, участники и оборудование собраны в одной форме.</p>
             </div>
-            <a class="btn btn-outline-light" href="accounts/login.html">Войти для бронирования</a>
+            <a class="btn btn-outline-light" href="{% url 'accounts:login' %}">Войти для бронирования</a>
         </header>
 
         <form class="search-panel" method="get" action="{% url 'rooms:index' %}">
@@ -99,11 +99,11 @@
 
                         <div class="room-card__equipment" aria-label="Оборудование">
                             {% if room.equipment.all %}
-                                {% for item in room.equipment.all %}
-                                    <span class="badge badge-equipment">{{ item.name }}</span>
-                                {% endfor %}
+                            {% for item in room.equipment.all %}
+                            <span class="badge badge-equipment">{{ item.name }}</span>
+                            {% endfor %}
                             {% else %}
-                                <span class="badge badge-equipment">Нет оборудования</span>
+                            <span class="badge badge-equipment">Нет оборудования</span>
                             {% endif %}
                         </div>
 

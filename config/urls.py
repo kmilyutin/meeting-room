@@ -23,9 +23,9 @@ from rooms.views import index
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('accounts/', include('accounts.urls')),
     path('', index, name='index'),
-    path('rooms/', include('rooms.urls', namespace='rooms'))
+    path('rooms/', include('rooms.urls', namespace='rooms')),
+    path('accounts/', include('accounts.urls', namespace='accounts')),
 ]
 
 if settings.DEBUG:
