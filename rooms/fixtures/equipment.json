@@ -35,7 +35,15 @@
     "model": "rooms.equipment",
     "pk": 5,
     "fields": {
-      "name": "Видеосвязь",
+      "name": "HDMI",
+      "description": ""
+    }
+  },
+  {
+    "model": "rooms.equipment",
+    "pk": 6,
+    "fields": {
+      "name": "Флипчарт",
       "description": ""
     }
   }

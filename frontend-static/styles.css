@@ -1,6 +1,6 @@
 @font-face {
   font-family: "iviSansBase";
-  src: url("../fonts/iviSansBase-Regular.woff2") format("woff2");
+  src: url("fonts/iviSansBase-Regular.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -8,7 +8,7 @@
 
 @font-face {
   font-family: "iviSansBase";
-  src: url("../fonts/iviSansBase-Medium.woff2") format("woff2");
+  src: url("fonts/iviSansBase-Medium.woff2") format("woff2");
   font-weight: 500;
   font-style: normal;
   font-display: swap;
@@ -16,7 +16,7 @@
 
 @font-face {
   font-family: "iviSansBase";
-  src: url("../fonts/iviSansBase-Bold.woff2") format("woff2");
+  src: url("fonts/iviSansBase-Bold.woff2") format("woff2");
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -152,44 +152,6 @@ textarea {
 .app-main {
   flex: 1;
   padding: 36px 0 48px;
-}
-
-.message-stack {
-  margin-top: 20px;
-}
-
-.alert {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-  margin: 0 0 18px;
-  padding: 14px 16px;
-  border: 1px solid var(--app-border);
-  border-radius: 8px;
-  background: rgba(255, 255, 255, .08);
-  color: var(--app-text-soft);
-}
-
-.alert-success {
-  background: rgba(0, 191, 76, .12);
-  color: #75f4a4;
-}
-
-.alert-warning {
-  background: rgba(247, 201, 72, .12);
-  color: #f7d774;
-}
-
-.alert-danger {
-  background: rgba(243, 7, 69, .12);
-  color: #ff8cab;
-}
-
-.alert .errorlist {
-  margin: 0;
-  padding: 0;
-  list-style: none;
 }
 
 .app-footer {
@@ -428,14 +390,7 @@ textarea {
   color: var(--app-text-soft);
 }
 
-.btn-outline-light {
-  border-color: var(--app-border-strong);
-  background: transparent;
-  color: var(--app-text-soft);
-}
-
-.btn-outline:hover,
-.btn-outline-light:hover {
+.btn-outline:hover {
   border-color: rgba(255, 255, 255, .28);
   color: var(--app-text);
 }
@@ -481,16 +436,6 @@ textarea {
   font-size: 13px;
 }
 
-.results-section {
-  margin-top: 34px;
-}
-
-.invalid-feedback {
-  color: #ff8cab;
-  font-size: 13px;
-  font-weight: 500;
-}
-
 .room-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -509,15 +454,6 @@ textarea {
   background:
     linear-gradient(135deg, rgba(243, 7, 69, .24), rgba(168, 105, 240, .16)),
     linear-gradient(135deg, #24222f, #100e19);
-}
-
-.room-card__visual img,
-.room-hero__image img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  min-height: inherit;
-  object-fit: cover;
 }
 
 .room-card__body {
@@ -673,31 +609,6 @@ textarea {
   padding: 24px;
 }
 
-.auth-layout {
-  width: min(100%, 460px);
-  margin: 0 auto;
-}
-
-.auth-heading {
-  margin-bottom: 22px;
-}
-
-.auth-card .card-body,
-.card-body {
-  padding: 24px;
-}
-
-.auth-card__footer,
-.card-footer {
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-  border-top: 1px solid var(--app-border);
-  background: transparent;
-  color: var(--app-text-muted);
-  font-size: 14px;
-}
-
 .profile-form {
   display: grid;
   gap: 16px;
@@ -727,36 +638,8 @@ textarea {
   margin-top: 24px;
 }
 
-.mb-2 {
-  margin-bottom: 8px;
-}
-
-.mb-3 {
-  margin-bottom: 16px;
-}
-
-.mb-4 {
-  margin-bottom: 24px;
-}
-
 .mt-auto {
   margin-top: auto;
-}
-
-.text-center {
-  text-align: center;
-}
-
-.w-100 {
-  width: 100%;
-}
-
-.d-grid {
-  display: grid;
-}
-
-.gap-2 {
-  gap: 8px;
 }
 
 @media (max-width: 900px) {

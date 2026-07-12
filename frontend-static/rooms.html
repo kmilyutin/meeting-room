@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Переговорные - Booked!</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <nav class="app-navbar">
+      <div class="page-shell app-navbar__inner">
+        <a class="app-brand" href="index.html"><span class="app-brand__mark">B</span><span>Booked!</span></a>
+        <div class="nav-links">
+          <a class="nav-link" href="index.html">Поиск</a>
+          <a class="nav-link active" href="rooms.html">Переговорные</a>
+          <a class="nav-link" href="my-bookings.html">Мои бронирования</a>
+          <a class="nav-link" href="profile.html">Мой профиль</a>
+        </div>
+      </div>
+    </nav>
+
+    <main class="app-main">
+      <div class="page-shell">
+        <header class="page-heading split-heading">
+          <div>
+            <p class="eyebrow">Каталог</p>
+            <h1 class="page-title">Переговорные</h1>
+            <p class="page-subtitle">Комнаты, вместимость, статусы и инвентарь. Список поддерживает пагинацию.</p>
+          </div>
+          <a class="btn btn-primary" href="index.html">Найти свободную</a>
+        </header>
+
+        <div class="rooms-layout">
+          <aside class="panel">
+            <label class="field">
+              <span class="form-label">Поиск по названию</span>
+              <input class="form-control" type="search" placeholder="Например, Алтай">
+            </label>
+            <label class="field mt-24">
+              <span class="form-label">Вместимость от</span>
+              <input class="form-control" type="number" min="1" value="4">
+            </label>
+            <div class="button-row mt-24">
+              <button class="btn btn-primary" type="button">Применить</button>
+              <a class="btn btn-outline" href="rooms.html">Сбросить</a>
+            </div>
+          </aside>
+
+          <section>
+            <div class="room-grid">
+              <article class="card room-card">
+                <div class="room-card__visual"></div>
+                <div class="room-card__body">
+                  <div class="room-card__top"><h2 class="room-card__title">Алтай</h2><span class="badge badge-free">Свободно</span></div>
+                  <p class="room-card__capacity">До 8 участников</p>
+                  <p class="room-card__description">Комната для встреч и командной работы.</p>
+                  <div class="badge-list"><span class="badge badge-equipment">Экран</span><span class="badge badge-equipment">Wi-Fi</span></div>
+                  <div class="button-row mt-auto"><a class="btn btn-outline" href="room-detail.html">Подробнее</a><a class="btn btn-primary" href="index.html">Забронировать</a></div>
+                </div>
+              </article>
+              <article class="card room-card">
+                <div class="room-card__visual"></div>
+                <div class="room-card__body">
+                  <div class="room-card__top"><h2 class="room-card__title">Байкал</h2><span class="badge badge-busy">Занято</span></div>
+                  <p class="room-card__capacity">До 12 участников</p>
+                  <p class="room-card__description">Просторная комната для презентаций.</p>
+                  <div class="badge-list"><span class="badge badge-equipment">Проектор</span><span class="badge badge-equipment">Доска</span></div>
+                  <div class="button-row mt-auto"><a class="btn btn-outline" href="room-detail.html">Подробнее</a><span class="btn btn-primary btn-disabled">Забронировать</span></div>
+                </div>
+              </article>
+              <article class="card room-card">
+                <div class="room-card__visual"></div>
+                <div class="room-card__body">
+                  <div class="room-card__top"><h2 class="room-card__title">Север</h2><span class="badge badge-unavailable">Недоступно</span></div>
+                  <p class="room-card__capacity">До 6 участников</p>
+                  <p class="room-card__description">Временно закрыта на обслуживание.</p>
+                  <div class="badge-list"><span class="badge badge-equipment">Wi-Fi</span><span class="badge badge-equipment">HDMI</span></div>
+                  <div class="button-row mt-auto"><a class="btn btn-outline" href="room-detail.html">Подробнее</a><span class="btn btn-primary btn-disabled">Забронировать</span></div>
+                </div>
+              </article>
+            </div>
+
+            <nav class="pagination" aria-label="Пагинация переговорных">
+              <span>‹</span><span class="active">1</span><a href="#">2</a><a href="#">3</a><a href="#">›</a>
+            </nav>
+          </section>
+        </div>
+      </div>
+    </main>
+
+    <footer class="app-footer"><div class="page-shell app-footer__inner"><span>Booked! - сервис бронирования переговорных</span><span class="app-footer__brand"><img class="app-footer__logo" src="img/logo.png" alt="">IVIsion</span></div></footer>
+  </div>
+</body>
+</html>

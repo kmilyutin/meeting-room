@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block main %}
+<main class="app-main">
+  <div class="page-shell">
+    <header class="page-heading split-heading">
+      <div>
+        <p class="eyebrow">Личный раздел</p>
+        <h1 class="page-title">Мои бронирования</h1>
+        <p class="page-subtitle">Продление доступно только если сразу после брони есть свободное окно.</p>
+      </div>
+      <a class="btn btn-primary" href="{% url 'rooms:index' %}">Новая бронь</a>
+    </header>
+
+    {% if booking_rows %}
+      <section class="booking-list">
+        {% for row in booking_rows %}
+          <article class="card booking-card">
+            <div class="booking-card__top">
+              <h2 class="booking-card__title">{{ row.booking.name }}</h2>
+              {% if row.can_extend %}
+                <span class="badge badge-free">Можно продлить</span>
+              {% else %}
+                <span class="badge badge-busy">Без продления</span>
+              {% endif %}
+            </div>
+            <p class="booking-meta">
+              {{ row.booking.start_time|date:"d E, H:i" }}-{{ row.booking.end_time|date:"H:i" }} · {{ row.booking.room.name }}
+            </p>
+            {% if row.can_extend %}
+              <div class="extend-box">
+                {% if row.free_until %}
+                  <strong>После встречи свободно до {{ row.free_until|date:"H:i" }}</strong>
+                {% else %}
+                  <strong>После встречи нет следующих броней</strong>
+                {% endif %}
+                <form class="button-row mt-24" method="post" action="{% url 'rooms:extend_booking' row.booking.pk %}">
+                  {% csrf_token %}
+                  <button class="btn btn-primary" type="submit">Продлить на 30 минут</button>
+                </form>
+              </div>
+            {% else %}
+              <div class="extend-box extend-box_locked">
+                <strong>Сразу после брони начинается другая встреча</strong>
+                <p class="booking-meta">Продление недоступно, выберите другое время через поиск.</p>
+              </div>
+            {% endif %}
+          </article>
+        {% endfor %}
+      </section>
+    {% else %}
+      <div class="empty-state">
+        <div class="empty-state__icon">B</div>
+        <div>
+          <h2 class="section-title">У вас пока нет броней</h2>
+          <p class="page-subtitle">Создайте первую бронь через поиск переговорных.</p>
+          <a class="btn btn-primary" href="{% url 'rooms:index' %}">Найти переговорную</a>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</main>
+{% endblock %}

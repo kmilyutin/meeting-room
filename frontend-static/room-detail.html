@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Алтай - Booked!</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <nav class="app-navbar">
+      <div class="page-shell app-navbar__inner">
+        <a class="app-brand" href="index.html"><span class="app-brand__mark">B</span><span>Booked!</span></a>
+        <div class="nav-links"><a class="nav-link" href="index.html">Поиск</a><a class="nav-link active" href="rooms.html">Переговорные</a><a class="nav-link" href="my-bookings.html">Мои бронирования</a><a class="nav-link" href="profile.html">Мой профиль</a></div>
+      </div>
+    </nav>
+    <main class="app-main">
+      <div class="page-shell">
+        <header class="page-heading"><p class="eyebrow">Переговорная</p><h1 class="page-title">Алтай</h1><p class="page-subtitle">Подробная информация, изображение, характеристики и ближайшие брони.</p></header>
+        <div class="detail-layout">
+          <article class="card room-hero">
+            <div class="room-hero__image" role="img" aria-label="Изображение переговорной Алтай"></div>
+            <div class="room-hero__content">
+              <div class="room-card__top"><h2 class="section-title">Комната для командных встреч</h2><span class="badge badge-free">Свободно</span></div>
+              <p class="room-card__description">Подходит для планерок, созвонов и рабочих сессий. Есть экран, стабильный Wi-Fi и маркерная доска.</p>
+              <div class="facts-grid">
+                <div class="fact"><div class="fact-value">8</div><div>участников</div></div>
+                <div class="fact"><div class="fact-value">3</div><div>единицы инвентаря</div></div>
+                <div class="fact"><div class="fact-value">11:00</div><div>ближайшее окно</div></div>
+              </div>
+              <div class="badge-list mt-24"><span class="badge badge-equipment">Экран</span><span class="badge badge-equipment">Wi-Fi</span><span class="badge badge-equipment">Доска</span></div>
+              <div class="button-row"><a class="btn btn-primary" href="index.html">Забронировать</a><a class="btn btn-outline" href="rooms.html">Назад к списку</a></div>
+            </div>
+          </article>
+          <aside class="timeline">
+            <div class="timeline-row timeline-row_busy"><span class="timeline-time">09:00</span><div><strong>Планерка</strong><div class="timeline-room">до 10:00</div></div><span class="badge badge-busy">Занято</span></div>
+            <div class="timeline-row timeline-row_free"><span class="timeline-time">10:00</span><div><strong>Свободно</strong><div class="timeline-room">окно 2 часа</div></div><span class="badge badge-free">Свободно</span></div>
+            <div class="timeline-row timeline-row_busy"><span class="timeline-time">14:00</span><div><strong>Ретро</strong><div class="timeline-room">до 15:00</div></div><span class="badge badge-busy">Занято</span></div>
+          </aside>
+        </div>
+      </div>
+    </main>
+    <footer class="app-footer"><div class="page-shell app-footer__inner"><span>Booked! - сервис бронирования переговорных</span><span class="app-footer__brand"><img class="app-footer__logo" src="img/logo.png" alt="">IVIsion</span></div></footer>
+  </div>
+</body>
+</html>

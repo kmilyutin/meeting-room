@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block main %}
+<main class="app-main">
+  <div class="page-shell">
+    <header class="page-heading split-heading">
+      <div>
+        <p class="eyebrow">Каталог</p>
+        <h1 class="page-title">Переговорные</h1>
+        <p class="page-subtitle">Комнаты, вместимость, статусы и инвентарь. Список поддерживает пагинацию.</p>
+      </div>
+      <a class="btn btn-primary" href="{% url 'rooms:index' %}">Найти свободную</a>
+    </header>
+
+    <div class="rooms-layout">
+      <aside class="panel">
+        <form method="get">
+          <label class="field">
+            <span class="form-label">Поиск</span>
+            <input class="form-control" type="search" name="q" placeholder="Название или инвентарь" value="{{ request.GET.q }}">
+          </label>
+          <label class="field mt-24">
+            <span class="form-label">Вместимость от</span>
+            <input class="form-control" type="number" name="capacity" min="1" value="{{ request.GET.capacity }}">
+          </label>
+          <label class="field mt-24">
+            <span class="form-label">Статус</span>
+            <select class="form-select" name="status">
+              <option value="">Любой</option>
+              {% for value, label in status_choices %}
+                <option value="{{ value }}" {% if request.GET.status == value %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+          </label>
+          <div class="button-row mt-24">
+            <button class="btn btn-primary" type="submit">Применить</button>
+            <a class="btn btn-outline" href="{% url 'rooms:list' %}">Сбросить</a>
+          </div>
+        </form>
+      </aside>
+
+      <section>
+        {% if rooms %}
+          <div class="room-grid">
+            {% for room in rooms %}
+              {% include 'rooms/_room_card.html' with room=room %}
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="empty-state">
+            <div class="empty-state__icon">B</div>
+            <div>
+              <h2 class="section-title">Переговорные не найдены</h2>
+              <p class="page-subtitle">Измените фильтры или сбросьте поиск.</p>
+            </div>
+          </div>
+        {% endif %}
+
+        {% if page_obj.paginator.num_pages > 1 %}
+          <nav class="pagination" aria-label="Пагинация переговорных">
+            {% if page_obj.has_previous %}
+              <a href="?page={{ page_obj.previous_page_number }}">‹</a>
+            {% else %}
+              <span>‹</span>
+            {% endif %}
+            {% for num in page_obj.paginator.page_range %}
+              {% if page_obj.number == num %}
+                <span class="active">{{ num }}</span>
+              {% else %}
+                <a href="?page={{ num }}">{{ num }}</a>
+              {% endif %}
+            {% endfor %}
+            {% if page_obj.has_next %}
+              <a href="?page={{ page_obj.next_page_number }}">›</a>
+            {% else %}
+              <span>›</span>
+            {% endif %}
+          </nav>
+        {% endif %}
+      </section>
+    </div>
+  </div>
+</main>
+{% endblock %}
