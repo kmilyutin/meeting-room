@@ -6,7 +6,7 @@
       "name": "Алтай",
       "capacity": 8,
       "description": "Комната для встреч, созвонов и командной работы.",
-      "image": "rooms_images/room-card-placeholder.png",
+      "image": "rooms_images/altai.png",
       "status": "available",
       "equipment": [1, 2, 4]
     }
@@ -18,7 +18,7 @@
       "name": "Байкал",
       "capacity": 12,
       "description": "Просторная комната с проектором для презентаций.",
-      "image": "rooms_images/room-card-placeholder_1DVNKL5.png",
+      "image": "rooms_images/baikal.png",
       "status": "busy",
       "equipment": [3, 4, 5]
     }
@@ -30,7 +30,7 @@
       "name": "Онега",
       "capacity": 4,
       "description": "Небольшая комната для быстрых синков и интервью.",
-      "image": "rooms_images/room-card-placeholder_4WXfsmj.png",
+      "image": "rooms_images/onega.png",
       "status": "available",
       "equipment": [1, 2]
     }
@@ -54,7 +54,7 @@
       "name": "Ладога",
       "capacity": 10,
       "description": "Тихая переговорная для рабочих сессий и воркшопов.",
-      "image": "rooms_images/room-card-placeholder_1DVNKL5.png",
+      "image": "rooms_images/room-card-placeholder.png",
       "status": "available",
       "equipment": [4, 6]
     }
@@ -66,7 +66,7 @@
       "name": "Кама",
       "capacity": 5,
       "description": "Компактная комната рядом с open space.",
-      "image": "rooms_images/room-card-placeholder_4WXfsmj.png",
+      "image": "rooms_images/room-card-placeholder.png",
       "status": "available",
       "equipment": [1, 5]
     }
