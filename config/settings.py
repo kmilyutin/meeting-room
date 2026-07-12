@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'accounts',
+    'rooms'
 ]
 
 MIDDLEWARE = [
@@ -75,17 +76,11 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'имя_вашей_базы',     # название базы, которую вы создали в Postgres
-        'USER': 'ваш_логин',          # ваш логин в Postgres
-        'PASSWORD': 'ваш_пароль',      # пароль
-        'HOST': 'localhost',          # адрес сервера
-        'PORT': '5432',               # стандартный порт
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
     }
 }
-
-AUTH_USER_MODEL = 'accounts.User'
 
 
 # Password validation
@@ -123,3 +118,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATICFILES_DIRS = (
+    BASE_DIR / 'static',
+)
+
+
+# Users
+
+AUTH_USER_MODEL = 'accounts.User'
