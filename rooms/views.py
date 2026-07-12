@@ -9,89 +9,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 
-from accounts.models import User
 from rooms.models import Booking, Equipment, Room
-
-
-ROOM_IMAGES = [
-    'rooms_images/room-card-placeholder.png',
-    'rooms_images/room-card-placeholder_1DVNKL5.png',
-    'rooms_images/room-card-placeholder_4WXfsmj.png',
-]
-
-
-def ensure_demo_data():
-    user, created = User.objects.get_or_create(
-        username='sonya',
-        defaults={'email': 'sonya@example.com'},
-    )
-    if created or not user.has_usable_password():
-        user.set_password('booked12345')
-        user.save()
-
-    equipment_names = ['Экран', 'Wi-Fi', 'Проектор', 'Доска', 'HDMI', 'Флипчарт']
-    equipment = {
-        name: Equipment.objects.get_or_create(name=name, defaults={'description': ''})[0]
-        for name in equipment_names
-    }
-
-    rooms_data = [
-        ('Алтай', 8, 'Комната для встреч, созвонов и командной работы.', 'available', ['Экран', 'Wi-Fi', 'Доска']),
-        ('Байкал', 12, 'Просторная комната с проектором для презентаций.', 'busy', ['Проектор', 'Доска', 'HDMI']),
-        ('Онега', 4, 'Небольшая комната для быстрых синков и интервью.', 'available', ['Wi-Fi', 'Экран']),
-        ('Север', 6, 'Комната временно закрыта на обслуживание.', 'unavailable', ['Wi-Fi', 'HDMI']),
-        ('Ладога', 10, 'Тихая переговорная для рабочих сессий и воркшопов.', 'available', ['Флипчарт', 'Доска']),
-        ('Кама', 5, 'Компактная комната рядом с open space.', 'available', ['Экран', 'HDMI']),
-        ('Енисей', 16, 'Большая переговорная для общих встреч.', 'busy', ['Проектор', 'Экран', 'Wi-Fi']),
-    ]
-
-    for index, (name, capacity, description, status, item_names) in enumerate(rooms_data):
-        room, _ = Room.objects.get_or_create(
-            name=name,
-            defaults={
-                'capacity': capacity,
-                'description': description,
-                'status': status,
-                'image': ROOM_IMAGES[index % len(ROOM_IMAGES)],
-            },
-        )
-        changed = False
-        for field, value in {
-            'capacity': capacity,
-            'description': description,
-            'status': status,
-        }.items():
-            if getattr(room, field) != value:
-                setattr(room, field, value)
-                changed = True
-        if not room.image:
-            room.image = ROOM_IMAGES[index % len(ROOM_IMAGES)]
-            changed = True
-        if changed:
-            room.save()
-        room.equipment.set([equipment[item_name] for item_name in item_names])
-
-    day = timezone.localdate() + timedelta(days=1)
-    booking_specs = [
-        ('Планерка продукта', 'Алтай', time(9, 0), time(10, 0), 'Ежедневная встреча команды.'),
-        ('Демо для команды', 'Алтай', time(10, 0), time(11, 0), 'Бронь с доступным продлением.'),
-        ('Интервью', 'Байкал', time(12, 30), time(13, 30), 'Встреча с кандидатом.'),
-        ('Ретро', 'Онега', time(14, 0), time(15, 0), 'Командная ретроспектива.'),
-    ]
-    for title, room_name, start, end, description in booking_specs:
-        room = Room.objects.get(name=room_name)
-        start_at = timezone.make_aware(datetime.combine(day, start), timezone.get_current_timezone())
-        end_at = timezone.make_aware(datetime.combine(day, end), timezone.get_current_timezone())
-        Booking.objects.get_or_create(
-            name=title,
-            defaults={
-                'start_time': start_at,
-                'end_time': end_at,
-                'description': description,
-                'organizer': user,
-                'room': room,
-            },
-        )
 
 
 def parse_date(value):
@@ -187,7 +105,6 @@ def get_timeline(day):
 
 
 def index(request):
-    ensure_demo_data()
     selected_date = parse_date(request.GET.get('date'))
     start_at = make_dt(selected_date, request.GET.get('start_time'))
     end_at = make_dt(selected_date, request.GET.get('end_time'))
@@ -223,7 +140,6 @@ def index(request):
 
 
 def room_list(request):
-    ensure_demo_data()
     rooms = Room.objects.prefetch_related('equipment').all().order_by('name')
     query = request.GET.get('q', '').strip()
     capacity = request.GET.get('capacity', '').strip()
@@ -254,7 +170,6 @@ def room_list(request):
 
 
 def room_detail(request, pk):
-    ensure_demo_data()
     room = decorate_room(get_object_or_404(Room.objects.prefetch_related('equipment'), pk=pk))
     day = parse_date(request.GET.get('date'))
     start_at = timezone.make_aware(datetime.combine(day, time.min), timezone.get_current_timezone())
@@ -272,7 +187,6 @@ def room_detail(request, pk):
 
 @login_required
 def book_room(request, pk):
-    ensure_demo_data()
     room = get_object_or_404(Room, pk=pk)
 
     query = request.GET.copy()
@@ -296,7 +210,6 @@ def can_extend(booking):
 
 @login_required
 def my_bookings(request):
-    ensure_demo_data()
     bookings = Booking.objects.select_related('room').filter(organizer=request.user).order_by('start_time')
     booking_rows = []
     for booking in bookings:
