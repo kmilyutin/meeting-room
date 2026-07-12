@@ -61,9 +61,6 @@
           <p class="eyebrow">Предстоящий день</p>
           <h2 class="section-title">Таймлайн на {{ timeline_day|date:"d E" }}</h2>
           <p class="page-subtitle">Брони и недоступные окна на выбранную дату.</p>
-          <div class="button-row">
-            <span class="badge badge-free">Следующее окно: 11:00</span>
-          </div>
         </header>
         <div class="timeline booking-dashboard__body">
           {% for row in timeline_rows %}

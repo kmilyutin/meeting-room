@@ -71,12 +71,16 @@ def get_equipment_choices():
     return Equipment.objects.order_by('name')
 
 
-def get_timeline(day):
+def day_bounds(day):
     start_at = timezone.make_aware(datetime.combine(day, time.min), timezone.get_current_timezone())
-    end_at = start_at + timedelta(days=1)
-    bookings = Booking.objects.select_related('room', 'organizer').filter(
-        start_time__gte=start_at,
+    return start_at, start_at + timedelta(days=1)
+
+
+def get_timeline(day):
+    start_at, end_at = day_bounds(day)
+    bookings = Booking.objects.select_related('room').filter(
         start_time__lt=end_at,
+        end_time__gt=start_at,
     ).order_by('start_time')
     rows = []
     for booking in bookings:
@@ -90,21 +94,13 @@ def get_timeline(day):
         })
     if not rows:
         rows.append({
-            'time': '09:00',
+            'time': '—',
             'title': 'Свободный день',
             'room': 'Все доступные переговорные',
-            'range': '09:00-18:00',
+            'range': 'весь день',
             'status': 'available',
             'status_label': 'Свободно',
         })
-    rows.append({
-        'time': '16:00',
-        'title': 'Техобслуживание',
-        'room': 'Север',
-        'range': 'до конца дня',
-        'status': 'unavailable',
-        'status_label': 'Недоступно',
-    })
     return rows
 
 
@@ -200,9 +196,12 @@ def room_list(request):
 def room_detail(request, pk):
     room = decorate_room(get_object_or_404(Room.objects.prefetch_related('equipment'), pk=pk))
     day = parse_date(request.GET.get('date'))
-    start_at = timezone.make_aware(datetime.combine(day, time.min), timezone.get_current_timezone())
-    end_at = start_at + timedelta(days=1)
-    bookings = Booking.objects.filter(room=room, start_time__gte=start_at, start_time__lt=end_at)
+    start_at, end_at = day_bounds(day)
+    bookings = Booking.objects.filter(
+        room=room,
+        start_time__lt=end_at,
+        end_time__gt=start_at,
+    ).order_by('start_time')
 
     context = {
         'title': f'{room.name} - Booked!',
@@ -307,11 +306,21 @@ def delete_booking(request, pk):
     return render(request, 'rooms/booking_confirm_delete.html', context)
 
 
-def can_extend(booking):
-    next_booking = Booking.objects.filter(
+_UNSET = object()
+
+
+def get_next_booking(booking):
+    return Booking.objects.filter(
         room=booking.room,
         start_time__gte=booking.end_time,
     ).exclude(pk=booking.pk).order_by('start_time').first()
+
+
+def can_extend(booking, next_booking=_UNSET):
+    if booking.end_time <= timezone.now():
+        return False
+    if next_booking is _UNSET:
+        next_booking = get_next_booking(booking)
     target_end = booking.end_time + timedelta(minutes=30)
     return next_booking is None or next_booking.start_time >= target_end
 
@@ -321,13 +330,10 @@ def my_bookings(request):
     bookings = Booking.objects.select_related('room').filter(organizer=request.user).order_by('start_time')
     booking_rows = []
     for booking in bookings:
-        next_booking = Booking.objects.filter(
-            room=booking.room,
-            start_time__gte=booking.end_time,
-        ).exclude(pk=booking.pk).order_by('start_time').first()
+        next_booking = get_next_booking(booking)
         booking_rows.append({
             'booking': booking,
-            'can_extend': can_extend(booking),
+            'can_extend': can_extend(booking, next_booking),
             'free_until': next_booking.start_time if next_booking else None,
         })
     context = {
@@ -341,7 +347,9 @@ def my_bookings(request):
 @login_required
 def extend_booking(request, pk):
     booking = get_object_or_404(Booking, pk=pk, organizer=request.user)
-    if can_extend(booking):
+    if booking.end_time <= timezone.now():
+        messages.warning(request, 'Нельзя продлить уже завершившуюся встречу.')
+    elif can_extend(booking):
         booking.end_time = booking.end_time + timedelta(minutes=30)
         booking.save(update_fields=['end_time'])
         messages.success(request, 'Бронь продлена на 30 минут.')
