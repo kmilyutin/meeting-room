@@ -3,12 +3,13 @@ from datetime import datetime, time, timedelta
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
+from django.db import transaction
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 
+from rooms.forms import BookingForm
 from rooms.models import Booking, Equipment, Room
 
 
@@ -37,14 +38,17 @@ def make_dt(day, value):
     return timezone.make_aware(datetime.combine(day, parsed), timezone.get_current_timezone())
 
 
-def room_has_conflict(room, start_at, end_at):
+def room_has_conflict(room, start_at, end_at, exclude_booking=None):
     if not start_at or not end_at or end_at <= start_at:
         return False
-    return Booking.objects.filter(
+    conflicts = Booking.objects.filter(
         room=room,
         start_time__lt=end_at,
         end_time__gt=start_at,
-    ).exists()
+    )
+    if exclude_booking is not None:
+        conflicts = conflicts.exclude(pk=exclude_booking.pk)
+    return conflicts.exists()
 
 
 def decorate_room(room, start_at=None, end_at=None):
@@ -185,18 +189,51 @@ def room_detail(request, pk):
     return render(request, 'rooms/detail.html', context)
 
 
+def build_booking_initial(request):
+    initial = {}
+    day = parse_date(request.GET.get('date'))
+    start_at = make_dt(day, request.GET.get('start_time'))
+    end_at = make_dt(day, request.GET.get('end_time'))
+    if start_at:
+        initial['start_time'] = timezone.localtime(start_at).strftime('%Y-%m-%dT%H:%M')
+    if end_at:
+        initial['end_time'] = timezone.localtime(end_at).strftime('%Y-%m-%dT%H:%M')
+    participants = request.GET.get('participants', '')
+    if participants.isdigit() and int(participants) > 0:
+        initial['participants'] = int(participants)
+    return initial
+
+
 @login_required
 def book_room(request, pk):
     room = get_object_or_404(Room, pk=pk)
 
-    query = request.GET.copy()
-    query['room'] = room.pk
-    redirect_url = reverse('rooms:index')
-    if query:
-        redirect_url = f'{redirect_url}?{query.urlencode()}'
+    if request.method == 'POST':
+        form = BookingForm(request.POST, room=room)
+        if form.is_valid():
+            with transaction.atomic():
+                Room.objects.select_for_update().get(pk=room.pk)
+                start_time = form.cleaned_data['start_time']
+                end_time = form.cleaned_data['end_time']
+                if room_has_conflict(room, start_time, end_time):
+                    form.add_error(None, 'Комната уже забронирована на выбранное время.')
+                else:
+                    booking = form.save(commit=False)
+                    booking.organizer = request.user
+                    booking.save()
+                    messages.success(request, f'Переговорная {room.name} забронирована.')
+                    return redirect('rooms:my_bookings')
+    else:
+        form = BookingForm(room=room, initial=build_booking_initial(request))
 
-    messages.info(request, f'Выберите дату и время для бронирования переговорной {room.name}.')
-    return redirect(redirect_url)
+    context = {
+        'title': f'Бронирование {room.name} - Booked!',
+        'room': room,
+        'form': form,
+        'heading': f'Бронирование переговорной {room.name}',
+        'submit_label': 'Забронировать',
+    }
+    return render(request, 'rooms/booking_form.html', context)
 
 
 def can_extend(booking):
