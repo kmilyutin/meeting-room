@@ -29,6 +29,7 @@
             </p>
             <div class="button-row">
               <a class="btn btn-outline" href="{% url 'rooms:edit_booking' row.booking.pk %}">Изменить</a>
+              <a class="btn btn-outline" href="{% url 'rooms:delete_booking' row.booking.pk %}">Удалить</a>
             </div>
             {% if row.can_extend %}
               <div class="extend-box">
