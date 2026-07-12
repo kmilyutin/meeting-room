@@ -1,9 +1,10 @@
 from django.shortcuts import render, HttpResponseRedirect
 from django.contrib import auth, messages
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 
-from accounts.models import User
-from accounts.forms import UserLoginForm, UserRegistrationForm
+from accounts.forms import ProfileForm, UserLoginForm, UserRegistrationForm
 
 def login(request):
     if request.method == 'POST':
@@ -49,3 +50,22 @@ def logout(request):
         'title': 'Выход - Booked!',
     }
     return render(request, 'accounts/logged-out.html', context)
+
+
+@login_required
+def profile(request):
+    if request.method == 'POST':
+        form = ProfileForm(request.POST, instance=request.user)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)
+            messages.success(request, 'Профиль обновлен.')
+            return HttpResponseRedirect(reverse('accounts:profile'))
+    else:
+        form = ProfileForm(instance=request.user)
+
+    context = {
+        'title': 'Мой профиль - Booked!',
+        'form': form,
+    }
+    return render(request, 'accounts/profile.html', context)
