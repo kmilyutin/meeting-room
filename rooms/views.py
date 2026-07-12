@@ -236,6 +236,37 @@ def book_room(request, pk):
     return render(request, 'rooms/booking_form.html', context)
 
 
+@login_required
+def edit_booking(request, pk):
+    booking = get_object_or_404(Booking.objects.select_related('room'), pk=pk, organizer=request.user)
+    room = booking.room
+
+    if request.method == 'POST':
+        form = BookingForm(request.POST, instance=booking, room=room)
+        if form.is_valid():
+            with transaction.atomic():
+                Room.objects.select_for_update().get(pk=room.pk)
+                start_time = form.cleaned_data['start_time']
+                end_time = form.cleaned_data['end_time']
+                if room_has_conflict(room, start_time, end_time, exclude_booking=booking):
+                    form.add_error(None, 'Комната уже забронирована на выбранное время.')
+                else:
+                    form.save()
+                    messages.success(request, 'Бронь обновлена.')
+                    return redirect('rooms:my_bookings')
+    else:
+        form = BookingForm(instance=booking, room=room)
+
+    context = {
+        'title': 'Изменение брони - Booked!',
+        'room': room,
+        'form': form,
+        'heading': f'Изменение брони «{booking.name}»',
+        'submit_label': 'Сохранить изменения',
+    }
+    return render(request, 'rooms/booking_form.html', context)
+
+
 def can_extend(booking):
     next_booking = Booking.objects.filter(
         room=booking.room,

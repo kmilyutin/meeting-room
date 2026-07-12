@@ -27,6 +27,9 @@
             <p class="booking-meta">
               {{ row.booking.start_time|date:"d E, H:i" }}-{{ row.booking.end_time|date:"H:i" }} · {{ row.booking.room.name }}
             </p>
+            <div class="button-row">
+              <a class="btn btn-outline" href="{% url 'rooms:edit_booking' row.booking.pk %}">Изменить</a>
+            </div>
             {% if row.can_extend %}
               <div class="extend-box">
                 {% if row.free_until %}
