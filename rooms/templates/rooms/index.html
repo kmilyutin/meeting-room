@@ -1,4 +1,4 @@
-{% extends 'rooms/base.html' %}
+{% extends 'base.html' %}
 {% load static %}
 
 {% block main %}
@@ -21,7 +21,9 @@
                 <h1 class="page-title">Найти свободную переговорную</h1>
                 <p class="page-subtitle">Дата, время, длительность, участники и оборудование собраны в одной форме.</p>
             </div>
-            <a class="btn btn-outline-light" href="{% url 'accounts:login' %}">Войти для бронирования</a>
+            {% if not user.is_authenticated %}
+                <a class="btn btn-outline-light" href="{% url 'accounts:login' %}">Войти для бронирования</a>
+            {% endif %}
         </header>
 
         <form class="search-panel" method="get" action="{% url 'rooms:index' %}">

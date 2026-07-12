@@ -22,7 +22,7 @@ class Room(models.Model):
     description = models.TextField(default="Нет описания")
     image = models.ImageField(upload_to="rooms_images")
     equipment = models.ManyToManyField(to=Equipment, blank=True)
-    status = models.CharField(max_length=32, choices=ROOM_STATUS_CHOICES, default='avaliable')
+    status = models.CharField(max_length=32, choices=ROOM_STATUS_CHOICES, default='available')
 
     def __str__(self):
         return f'Комната {self.name}'

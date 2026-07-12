@@ -27,15 +27,15 @@
                 <div class="collapse navbar-collapse" id="mainNav">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                         <li class="nav-item">
-                            <a class="nav-link active" href="{% url 'rooms:index' %}">Поиск</a>
+                            <a class="nav-link active" href="{% url 'rooms:search' %}">Поиск</a>
                         </li>
                         <li class="nav-item">
                             <!-- Будущий backend-маршрут списка переговорных. -->
-                            <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Переговорные</a>
+                            <a class="nav-link active" href="#" tabindex="-1" aria-disabled="true">Переговорные</a>
                         </li>
                         <li class="nav-item">
                             <!-- Будущий backend-маршрут личных бронирований. -->
-                            <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Мои
+                            <a class="nav-link {% if user.is_authenticated %} active {% else %} disabled {% endif %}" href="#" tabindex="-1" aria-disabled="true">Мои
                                 бронирования</a>
                         </li>
                     </ul>
@@ -62,7 +62,7 @@
         <footer class="app-footer">
             <div class="page-shell app-footer__inner">
                 <span>Booked! - учебный сервис бронирования переговорных</span>
-                <span class="app-footer__meta">IVIsion</span>
+                <span class="app-footer__meta">IVIsion © 2026 All rights reserved</span>
             </div>
         </footer>
     </div>

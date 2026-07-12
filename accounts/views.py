@@ -15,7 +15,7 @@ def login(request):
             if user:
                 auth.login(request, user)
                 messages.success(request, 'Поздравляем! Вы успешно вошли в аккаунт!')
-                return HttpResponseRedirect(reverse('index'))
+                return HttpResponseRedirect(reverse('rooms:index'))
     else:
         form = UserLoginForm()
     
