@@ -1,5 +1,5 @@
 from django.shortcuts import render, HttpResponseRedirect
-from django.contrib import auth
+from django.contrib import auth, messages
 from django.urls import reverse
 
 from accounts.models import User
@@ -14,6 +14,7 @@ def login(request):
             user = auth.authenticate(username=username, password=password)
             if user:
                 auth.login(request, user)
+                messages.success(request, 'Поздравляем! Вы успешно вошли в аккаунт!')
                 return HttpResponseRedirect(reverse('index'))
     else:
         form = UserLoginForm()
@@ -30,6 +31,7 @@ def register(request):
         form = UserRegistrationForm(data=request.POST)
         if form.is_valid():
             form.save()
+            messages.success(request, 'Вы успешно зарегистрировались! Теперь войдите в аккаунт')
             return HttpResponseRedirect(reverse('accounts:login'))
     else:
         form = UserRegistrationForm()
@@ -41,6 +43,8 @@ def register(request):
     return render(request, 'accounts/register.html', context)
 
 def logout(request):
+    auth.logout(request)
+
     context = {
         'title': 'Выход - Booked!',
     }

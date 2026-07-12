@@ -340,8 +340,41 @@ a {
 }
 
 .alert {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
   border-radius: 8px;
   border-color: var(--app-border);
+}
+
+.alert-dismissible {
+  padding-right: 1rem;
+}
+
+.alert .btn-close {
+  position: static;
+  flex-shrink: 0;
+  margin: 2px 0 0;
+  padding: 0;
+  filter: invert(1) grayscale(1) brightness(2);
+  opacity: .7;
+}
+
+.alert .btn-close:hover {
+  opacity: 1;
+}
+
+.alert ul.errorlist,
+.alert .errorlist {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.alert ul.errorlist li + li,
+.alert .errorlist li + li {
+  margin-top: 4px;
 }
 
 .alert-danger {
@@ -352,6 +385,11 @@ a {
 .alert-success {
   background: rgba(0, 191, 76, .12);
   color: #75f4a4;
+}
+
+.alert-warning {
+  background: rgba(255, 84, 46, .12);
+  color: #ffb199;
 }
 
 .auth-layout {

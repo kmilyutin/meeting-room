@@ -41,8 +41,17 @@
                     </ul>
 
                     <div class="d-flex align-items-lg-center gap-2 flex-column flex-lg-row">
-                        <a class="btn btn-outline-light btn-sm" href="{% url 'accounts:login' %}">Войти</a>
-                        <a class="btn btn-primary btn-sm" href="{% url 'accounts:register' %}">Регистрация</a>
+                        {% if user.is_superuser or user.is_staff %}
+                            <a class="btn btn-outline-light btn-sm" href="{% url 'admin:index' %}">Админка</a>
+                        {% endif %}
+
+                        {% if user.is_authenticated %}
+                            <span class="user-chip">{{ user.username }}</span>
+                            <a href="{% url 'accounts:logout' %}" class="btn btn-outline-light btn-sm">Выйти</a>
+                        {% else %}
+                            <a class="btn btn-outline-light btn-sm" href="{% url 'accounts:login' %}">Войти</a>
+                            <a class="btn btn-primary btn-sm" href="{% url 'accounts:register' %}">Регистрация</a>
+                        {% endif %}
                     </div>
                 </div>
             </div>

@@ -4,6 +4,17 @@
 {% block main %}
 <main class="app-main">
     <div class="page-shell">
+        {% if messages %}
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <ul class="errorlist mb-0">
+                    {% for message in messages %}
+                        {{ message }}
+                    {% endfor %}
+                </ul>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endif %}
+        
         <header class="page-heading search-heading">
             <div>
                 <p class="eyebrow">Переговорные</p>
