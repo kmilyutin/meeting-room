@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -73,12 +74,15 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 
 # Database
-# https://docs.djangoproject.com/en/6.0/ref/settings/#databases
-
+# Читаем настройки из переменных окружения (из .env)
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('DB_NAME', 'booked_db'),
+        'USER': os.getenv('DB_USER', 'postgres'),
+        'PASSWORD': os.getenv('DB_PASSWORD', 'postgres'),
+        'HOST': os.getenv('DB_HOST', 'db'),
+        'PORT': os.getenv('DB_PORT', '5432'),
     }
 }
 
@@ -128,3 +132,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # Users
 
 AUTH_USER_MODEL = 'accounts.User'
+
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-wjyi41cryyx(etd$hj@al*hlxy8q&1f5h5ht6d=$mpv*(^-3e=')
+DEBUG = os.getenv('DEBUG', 'True') == 'True'
+ALLOWED_HOSTS = ['*'] 
