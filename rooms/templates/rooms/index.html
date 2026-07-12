@@ -13,7 +13,7 @@
             <a class="btn btn-outline-light" href="accounts/login.html">Войти для бронирования</a>
         </header>
 
-        <form class="search-panel" method="get" action="{% url 'index' %}">
+        <form class="search-panel" method="get" action="{% url 'rooms:index' %}">
             <div class="row g-3">
                 <div class="col-12 col-md-3">
                     <label class="form-label" for="search-date">Дата встречи</label>
@@ -64,7 +64,7 @@
 
             <div class="search-actions">
                 <button class="btn btn-primary" type="submit">Найти переговорную</button>
-                <a class="btn btn-outline-light" href="{% url 'index' %}">Сбросить</a>
+                <a class="btn btn-outline-light" href="{% url 'rooms:index' %}">Сбросить</a>
             </div>
         </form>
 
@@ -127,7 +127,7 @@
               <div>
                 <h2 class="empty-state__title">Подходящих комнат не найдено</h2>
                 <p class="empty-state__text">Попробуйте изменить время, длительность, вместимость или набор оборудования.</p>
-                <a class="btn btn-outline-light" href="{% url 'index' %}">Сбросить фильтры</a>
+                <a class="btn btn-outline-light" href="{% url 'rooms:index' %}">Сбросить фильтры</a>
               </div>
             </div>
           -->

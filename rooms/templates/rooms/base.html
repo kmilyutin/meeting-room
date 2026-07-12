@@ -15,7 +15,7 @@
     <div class="app-shell">
         <nav class="navbar navbar-expand-lg navbar-dark app-navbar">
             <div class="container-fluid page-shell">
-                <a class="navbar-brand app-brand" href="{% url 'index' %}">
+                <a class="navbar-brand app-brand" href="{% url 'rooms:index' %}">
                     <span class="app-brand__mark">B</span>
                     <span>Booked!</span>
                 </a>
@@ -27,7 +27,7 @@
                 <div class="collapse navbar-collapse" id="mainNav">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                         <li class="nav-item">
-                            <a class="nav-link active" href="{% url 'index' %}">Поиск</a>
+                            <a class="nav-link active" href="{% url 'rooms:index' %}">Поиск</a>
                         </li>
                         <li class="nav-item">
                             <!-- Будущий backend-маршрут списка переговорных. -->
