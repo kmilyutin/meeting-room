@@ -11,6 +11,35 @@
                 <p class="page-subtitle">Авторизуйтесь, чтобы перейти к бронированию переговорных.</p>
             </div>
 
+            {% if messages or form.errors %}
+            <div class="alert 
+            {% if messages %} alert-success {% else %} alert-warning {% endif %} 
+            alert-dismissible fade show" role="alert">
+                <ul class="errorlist mb-0">
+                    {% if messages %}
+                        {% for message in messages %}
+                            {{ message }}
+                        {% endfor %}
+                    {% else %}
+                        {% for field in form %}
+                            {% for error in field.errors.as_data %}
+                            <li>
+                                {% if error.code == 'required' %}<strong>{{ field.label }}:</strong> {% endif %}
+                                {{ error.message }}
+                            </li>
+                            {% endfor %}
+                        {% endfor %}
+
+                        {% for error in form.non_field_errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    {% endif %}
+
+                </ul>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endif %}
+
             <div class="card auth-card">
                 <div class="card-body">
                     <form action="{% url 'accounts:login' %}" method="post" class="auth-form" novalidate>

@@ -11,6 +11,25 @@
                 <p class="page-subtitle">Создайте аккаунт для будущего управления своими бронированиями.</p>
             </div>
 
+            {% if form.errors %}
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <ul class="errorlist mb-0">
+                    {% for field in form %}
+                    {% for error in field.errors.as_data %}
+                    <li>
+                        {% if error.code == 'required' %}<strong>{{ field.label }}:</strong> {% endif %}
+                        {{ error.message }}
+                    </li>
+                    {% endfor %}
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}
+                    <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endif %}
+
             <div class="card auth-card">
                 <div class="card-body">
                     <form action="{% url 'accounts:register' %}" method="post" class="auth-form" novalidate>
@@ -28,7 +47,8 @@
                             {{ form.password1 }}
                         </div>
                         <div class="mb-3">
-                            <label class="form-label" for="{{ form.password2.id_for_label }}">Подтверждение пароля</label>
+                            <label class="form-label" for="{{ form.password2.id_for_label }}">Подтверждение
+                                пароля</label>
                             {{ form.password2 }}
                         </div>
 

@@ -4,11 +4,11 @@ from django import forms
 from accounts.models import User
 
 class UserLoginForm(AuthenticationForm):
-    username = forms.CharField(widget=forms.TextInput(attrs={
+    username = forms.CharField(label="Имя пользователя", widget=forms.TextInput(attrs={
         'class': "form-control",
         'placeholder': "Введите имя пользователя",
     }))
-    password = forms.CharField(widget=forms.PasswordInput(attrs={
+    password = forms.CharField(label="Пароль", widget=forms.PasswordInput(attrs={
         'class': "form-control",
         'placeholder': "Введите пароль",
     }))
@@ -18,19 +18,19 @@ class UserLoginForm(AuthenticationForm):
         fields = ('username', 'password')
 
 class UserRegistrationForm(UserCreationForm):
-    username = forms.CharField(widget=forms.TextInput(attrs={
+    username = forms.CharField(label="Имя пользователя", widget=forms.TextInput(attrs={
         'class': "form-control",
         'placeholder': "Введите имя пользователя",
     }))
-    email = forms.CharField(widget=forms.EmailInput(attrs={
+    email = forms.CharField(label="Email", widget=forms.EmailInput(attrs={
         'class': "form-control",
         'placeholder': "name@example.com",
     }))
-    password1 = forms.CharField(widget=forms.PasswordInput(attrs={
+    password1 = forms.CharField(label="Пароль", widget=forms.PasswordInput(attrs={
         'class': "form-control",
         'placeholder': "Придумайте пароль",
     }))
-    password2 = forms.CharField(widget=forms.PasswordInput(attrs={
+    password2 = forms.CharField(label="Подтверждение пароля", widget=forms.PasswordInput(attrs={
         'class': "form-control",
         'placeholder': "Повторите пароль",
     }))
