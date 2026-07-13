@@ -2,7 +2,46 @@
 
 Сервис поиска и бронирования переговорных комнат.
 
-## Запуск через Docker
+---
+
+![Python](https://img.shields.io/badge/Python-3.10+-blue?logo=python)
+![Django](https://img.shields.io/badge/Django-5.2.16-green?logo=django)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue?logo=postgresql)
+
+---
+
+## Команда
+- Понарин Алексей
+- Ханана Софья 
+- Милютин Николай
+- Ахмедзянов Артём 
+- Шулаев Ярослав
+
+---
+
+## Оглавление
+- [Развертывание](#развертывание)
+- [Тесты](#тесты)
+- [Модели](#модели)
+- [Скриншоты](#скриншоты)
+- [Видео-демо](#видео)
+- [Документация](#документация)
+
+---
+
+## Технологии
+- Python 3.10+
+- Django 5.2.16
+- PostgreSQL
+- Gunicorn
+- WhiteNoise
+- Pillow
+- python-dotenv — управление переменными окружения
+- Bootstrap 5
+
+---
+
+## Развёртывание
 
 Требования: Git и Docker Compose.
 
@@ -24,64 +63,62 @@ docker compose -f docker/docker-compose.yml exec web python manage.py createsupe
 docker compose -f docker/docker-compose.yml down
 ```
 
-## Локальный запуск через venv
+---
 
-Требования: Python 3.10+ и запущенный PostgreSQL.
+## Тесты 
+   Запуск тестов :
+   ```bash
+   docker-compose -f docker/docker-compose.yml exec web pytest
+   ```
 
-```bash
-python -m venv .venv
-```
+---
 
-Активация в Linux/macOS:
+## Модели
 
-```bash
-source .venv/bin/activate
-```
+Проект использует 4 модели:
 
-Активация в Windows PowerShell:
+- **User** — кастомная модель пользователя (AbstractUser). Хранит логин, email, пароль, имя, фамилию.
 
-```powershell
-.venv\Scripts\Activate.ps1
-```
+- **Room** — переговорная комната. Поля: название, вместимость, описание, фото. Связана с Booking через ForeignKey (одна комната — много бронирований) и с Equipment через ManyToMany (много ко многим).
 
-Установка и запуск:
+- **Booking** — бронирование. Поля: пользователь, комната, дата, время начала, продолжительность, статус. У пользователя может быть много бронирований, у комнаты — много бронирований.
 
-```bash
-python -m pip install -r requirements.txt
-cp .env.example .env
-python manage.py migrate
-python manage.py loaddata equipment rooms
-python manage.py createsuperuser
-python manage.py runserver
-```
+- **Equipment** — оборудование. Поля: название, описание. Связана с Room через ManyToMany (одно оборудование может быть во многих комнатах, в комнате — много оборудования).
 
-Для локального запуска замените `DB_HOST=db` на `DB_HOST=localhost`. В Docker оставьте `DB_HOST=db`.
+---
 
-## Тесты
+## Скриншоты
 
-Локально:
+![Главная страница](media/screenshots/index.png)
 
-```bash
-coverage run manage.py test
-coverage report --fail-under=70
-```
+*Главная страница содержит форму поиска с фильтрацией по дате, времени, количеству участников и инвентарю, а также таймлайн с расписанием бронирований на выбранную дату.*
 
-В Docker:
+---
 
-```bash
-docker compose -f docker/docker-compose.yml exec web coverage run manage.py test
-docker compose -f docker/docker-compose.yml exec web coverage report --fail-under=70
-```
+![Каталог переговорных](media/screenshots/meeting_rooms.png)
 
-## Переменные окружения
+*Список всех переговорных комнат с пагинацией (5-10 элементов на страницу), фильтрацией по вместимости и статусу, а также отображением доступного оборудования.*
 
-- `SECRET_KEY` — секретный ключ Django; при `DEBUG=False` должен отличаться от значения по умолчанию.
-- `DEBUG` — режим разработки (`True` или `False`).
-- `ALLOWED_HOSTS` — разрешённые хосты через запятую.
-- `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_HOST`, `DB_PORT` — подключение к PostgreSQL.
+---
+
+![Мои бронирования](media/screenshots/my_bookings.png)
+
+*Личный кабинет пользователя со списком всех его бронирований. Доступны функции продления, редактирования и удаления бронирования.*
+
+---
+
+![Мой профиль](media/screenshots/my_profile.png)
+
+*Страница управления профилем пользователя: изменение логина, email и пароля. После смены пароля активная сессия сохраняется.*
+
+---
+
+## Видео-демо
+
+
+---
 
 ## Документация
 
-- Модели: `User`, `Room`, `Booking`, `Equipment`; используются ForeignKey и ManyToManyField.
-- Схема БД: `docs/ER_diagram.drawio`.
-- Декомпозиция: `docs/DECOMPOSITION.md`.
+- Схема БД: См. файл ER_diagram.drawio.
+- Декомпозиция: См. файл DECOMPOSITION.md.
