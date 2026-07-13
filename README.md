@@ -36,24 +36,39 @@
 - Gunicorn
 - WhiteNoise
 - Pillow
-- python-dotenv — управление переменными окружения
+- python-dotenv
 - Bootstrap 5
 
 ---
 
 ## Развёртывание
 
-Требования: Git и Docker Compose.
+### 1. **Клонировать репозиторий**
+   ```bash
+   git clone <ссылка>
+   cd <название_проекта>
+   ```
 
-```bash
-git clone https://github.com/kmilyutin/meeting-room.git
-cd meeting-room
-cp .env.example .env
-docker compose -f docker/docker-compose.yml up --build -d
-docker compose -f docker/docker-compose.yml exec web python manage.py migrate
-docker compose -f docker/docker-compose.yml exec web python manage.py loaddata equipment rooms
-docker compose -f docker/docker-compose.yml exec web python manage.py createsuperuser
-```
+### 2. **Настроить переменные окружения**
+   Скопируйте пример файла конфигурации и отредактируйте .env, указав свои данные для PostgreSQL:
+   ```bash
+   cp .env.example .env
+   ```
+
+### 3. **Запустить проект через Docker:**
+   ```bash
+   docker-compose -f docker/docker-compose.yml up --build
+   ```
+
+### 4. **Выполнить миграции:**
+   ```bash
+   docker-compose -f docker/docker-compose.yml exec web python manage.py migrate
+   ```
+
+### 5. **Создать суперпользователя:**
+   ```bash
+   docker-compose -f docker/docker-compose.yml exec web python manage.py createsuperuser
+   ```
 
 Приложение будет доступно по адресу http://127.0.0.1:8000/. Nginx проксирует приложение и обслуживает фотографии из `/media/` при `DEBUG=False`.
 
@@ -93,19 +108,16 @@ docker compose -f docker/docker-compose.yml down
 
 *Главная страница содержит форму поиска с фильтрацией по дате, времени, количеству участников и инвентарю, а также таймлайн с расписанием бронирований на выбранную дату.*
 
----
 
 ![Каталог переговорных](media/screenshots/meeting_rooms.png)
 
 *Список всех переговорных комнат с пагинацией (5-10 элементов на страницу), фильтрацией по вместимости и статусу, а также отображением доступного оборудования.*
 
----
 
 ![Мои бронирования](media/screenshots/my_bookings.png)
 
 *Личный кабинет пользователя со списком всех его бронирований. Доступны функции продления, редактирования и удаления бронирования.*
 
----
 
 ![Мой профиль](media/screenshots/my_profile.png)
 
@@ -120,5 +132,5 @@ docker compose -f docker/docker-compose.yml down
 
 ## Документация
 
-- Схема БД: См. файл ER_diagram.drawio.
-- Декомпозиция: См. файл DECOMPOSITION.md.
+- Схема БД: См. файл /docs/ER_diagram.drawio.
+- Декомпозиция: См. файл /docs/DECOMPOSITION.md.
