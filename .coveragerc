@@ -1,0 +1,9 @@
+[run]
+source = accounts,rooms
+
+[report]
+omit =
+    */migrations/*
+    */tests.py
+show_missing = True
+skip_covered = True

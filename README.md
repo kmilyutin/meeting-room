@@ -62,13 +62,15 @@ python manage.py runserver
 Локально:
 
 ```bash
-python manage.py test
+coverage run manage.py test
+coverage report --fail-under=70
 ```
 
 В Docker:
 
 ```bash
-docker compose -f docker/docker-compose.yml exec web python manage.py test
+docker compose -f docker/docker-compose.yml exec web coverage run manage.py test
+docker compose -f docker/docker-compose.yml exec web coverage report --fail-under=70
 ```
 
 ## Переменные окружения
