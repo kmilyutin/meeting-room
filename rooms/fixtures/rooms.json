@@ -19,7 +19,7 @@
       "capacity": 12,
       "description": "Просторная комната с проектором для презентаций.",
       "image": "rooms_images/baikal.png",
-      "status": "busy",
+      "status": "available",
       "equipment": [3, 4, 5]
     }
   },
@@ -79,7 +79,7 @@
       "capacity": 16,
       "description": "Большая переговорная для общих встреч.",
       "image": "rooms_images/room-card-placeholder.png",
-      "status": "busy",
+      "status": "available",
       "equipment": [1, 2, 3]
     }
   }

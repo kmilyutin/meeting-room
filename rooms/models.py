@@ -17,7 +17,6 @@ class Equipment(models.Model):
 class Room(models.Model):
     ROOM_STATUS_CHOICES = [
         ('available', 'Свободно'),
-        ('busy', 'Занято'),
         ('unavailable', 'Недоступно'),
     ]
 
@@ -55,8 +54,30 @@ class Booking(models.Model):
         ]
 
     def clean(self):
+        errors = {}
         if self.start_time and self.end_time and self.end_time <= self.start_time:
-            raise ValidationError('Время окончания должно быть позже времени начала.')
+            errors['end_time'] = 'Время окончания должно быть позже времени начала.'
+
+        if self.room_id:
+            if self.room.status != 'available':
+                errors['room'] = 'Эта комната недоступна для бронирования.'
+            if self.participants and self.participants > self.room.capacity:
+                errors['participants'] = (
+                    f'Комната вмещает не более {self.room.capacity} участников.'
+                )
+            if self.start_time and self.end_time and self.end_time > self.start_time:
+                conflicts = Booking.objects.filter(
+                    room_id=self.room_id,
+                    start_time__lt=self.end_time,
+                    end_time__gt=self.start_time,
+                )
+                if self.pk:
+                    conflicts = conflicts.exclude(pk=self.pk)
+                if conflicts.exists():
+                    errors['__all__'] = 'Комната уже забронирована на выбранное время.'
+
+        if errors:
+            raise ValidationError(errors)
 
     def __str__(self):
         return self.name

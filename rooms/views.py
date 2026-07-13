@@ -56,7 +56,7 @@ def decorate_room(room, start_at=None, end_at=None):
         room.display_status = 'unavailable'
         room.display_status_label = 'Недоступно'
         room.can_book = False
-    elif room_has_conflict(room, start_at, end_at) or room.status == 'busy':
+    elif room_has_conflict(room, start_at, end_at):
         room.display_status = 'busy'
         room.display_status_label = 'Занято'
         room.can_book = False
@@ -235,10 +235,17 @@ def book_room(request, pk):
         form = BookingForm(request.POST, room=room)
         if form.is_valid():
             with transaction.atomic():
-                Room.objects.select_for_update().get(pk=room.pk)
+                locked_room = Room.objects.select_for_update().get(pk=room.pk)
                 start_time = form.cleaned_data['start_time']
                 end_time = form.cleaned_data['end_time']
-                if room_has_conflict(room, start_time, end_time):
+                if locked_room.status != 'available':
+                    form.add_error(None, 'Эта комната недоступна для бронирования.')
+                elif form.cleaned_data['participants'] > locked_room.capacity:
+                    form.add_error(
+                        'participants',
+                        f'Комната вмещает не более {locked_room.capacity} участников.',
+                    )
+                elif room_has_conflict(locked_room, start_time, end_time):
                     form.add_error(None, 'Комната уже забронирована на выбранное время.')
                 else:
                     booking = form.save(commit=False)
@@ -265,20 +272,45 @@ def edit_booking(request, pk):
     room = booking.room
 
     if request.method == 'POST':
-        form = BookingForm(request.POST, instance=booking, room=room)
+        form = BookingForm(
+            request.POST,
+            instance=booking,
+            room=room,
+            allow_room_change=True,
+        )
         if form.is_valid():
             with transaction.atomic():
-                Room.objects.select_for_update().get(pk=room.pk)
+                selected_room = form.cleaned_data['room']
+                room_ids = sorted({room.pk, selected_room.pk})
+                locked_rooms = {
+                    item.pk: item
+                    for item in Room.objects.select_for_update().filter(
+                        pk__in=room_ids
+                    ).order_by('pk')
+                }
+                locked_room = locked_rooms[selected_room.pk]
                 start_time = form.cleaned_data['start_time']
                 end_time = form.cleaned_data['end_time']
-                if room_has_conflict(room, start_time, end_time, exclude_booking=booking):
+                if locked_room.status != 'available':
+                    form.add_error(None, 'Эта комната недоступна для бронирования.')
+                elif form.cleaned_data['participants'] > locked_room.capacity:
+                    form.add_error(
+                        'participants',
+                        f'Комната вмещает не более {locked_room.capacity} участников.',
+                    )
+                elif room_has_conflict(
+                    locked_room,
+                    start_time,
+                    end_time,
+                    exclude_booking=booking,
+                ):
                     form.add_error(None, 'Комната уже забронирована на выбранное время.')
                 else:
                     form.save()
                     messages.success(request, 'Бронь обновлена.')
                     return redirect('rooms:my_bookings')
     else:
-        form = BookingForm(instance=booking, room=room)
+        form = BookingForm(instance=booking, room=room, allow_room_change=True)
 
     context = {
         'title': 'Изменение брони - Booked!',
@@ -346,13 +378,20 @@ def my_bookings(request):
 @require_POST
 @login_required
 def extend_booking(request, pk):
-    booking = get_object_or_404(Booking, pk=pk, organizer=request.user)
-    if booking.end_time <= timezone.now():
-        messages.warning(request, 'Нельзя продлить уже завершившуюся встречу.')
-    elif can_extend(booking):
-        booking.end_time = booking.end_time + timedelta(minutes=30)
-        booking.save(update_fields=['end_time'])
-        messages.success(request, 'Бронь продлена на 30 минут.')
-    else:
-        messages.warning(request, 'После этой брони нет свободного окна для продления.')
+    booking_ref = get_object_or_404(Booking, pk=pk, organizer=request.user)
+    with transaction.atomic():
+        Room.objects.select_for_update().get(pk=booking_ref.room_id)
+        booking = get_object_or_404(
+            Booking.objects.select_for_update(),
+            pk=pk,
+            organizer=request.user,
+        )
+        if booking.end_time <= timezone.now():
+            messages.warning(request, 'Нельзя продлить уже завершившуюся встречу.')
+        elif can_extend(booking):
+            booking.end_time = booking.end_time + timedelta(minutes=30)
+            booking.save(update_fields=['end_time'])
+            messages.success(request, 'Бронь продлена на 30 минут.')
+        else:
+            messages.warning(request, 'После этой брони нет свободного окна для продления.')
     return redirect('rooms:my_bookings')
