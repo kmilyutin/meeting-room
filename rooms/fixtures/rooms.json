@@ -42,7 +42,7 @@
       "name": "Север",
       "capacity": 6,
       "description": "Комната временно закрыта на обслуживание.",
-      "image": "rooms_images/room-card-placeholder.png",
+      "image": "rooms_images/sever.png",
       "status": "unavailable",
       "equipment": [2, 5]
     }
@@ -54,7 +54,7 @@
       "name": "Ладога",
       "capacity": 10,
       "description": "Тихая переговорная для рабочих сессий и воркшопов.",
-      "image": "rooms_images/room-card-placeholder.png",
+      "image": "rooms_images/ladoga.png",
       "status": "available",
       "equipment": [4, 6]
     }
@@ -66,7 +66,7 @@
       "name": "Кама",
       "capacity": 5,
       "description": "Компактная комната рядом с open space.",
-      "image": "rooms_images/room-card-placeholder.png",
+      "image": "rooms_images/kama.png",
       "status": "available",
       "equipment": [1, 5]
     }
@@ -78,7 +78,7 @@
       "name": "Енисей",
       "capacity": 16,
       "description": "Большая переговорная для общих встреч.",
-      "image": "rooms_images/room-card-placeholder.png",
+      "image": "rooms_images/yenisei.png",
       "status": "available",
       "equipment": [1, 2, 3]
     }
