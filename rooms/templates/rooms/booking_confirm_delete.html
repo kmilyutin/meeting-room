@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block main %}
+<main class="app-main">
+  <div class="page-shell">
+    <header class="page-heading">
+      <p class="eyebrow">Удаление брони</p>
+      <h1 class="page-title">Удалить бронь «{{ booking.name }}»?</h1>
+      <p class="page-subtitle">
+        {{ booking.start_time|date:"d E, H:i" }}-{{ booking.end_time|date:"H:i" }} · {{ booking.room.name }}
+      </p>
+    </header>
+
+    <form class="panel" method="post">
+      {% csrf_token %}
+      <p>Действие нельзя отменить. Бронь будет удалена, а время станет доступно другим.</p>
+      <div class="button-row mt-24">
+        <button class="btn btn-primary" type="submit">Удалить</button>
+        <a class="btn btn-outline" href="{% url 'rooms:my_bookings' %}">Отмена</a>
+      </div>
+    </form>
+  </div>
+</main>
+{% endblock %}

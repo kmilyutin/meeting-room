@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block main %}
+<main class="app-main">
+  <div class="page-shell">
+    <header class="page-heading">
+      <p class="eyebrow">Бронирование</p>
+      <h1 class="page-title">{{ heading }}</h1>
+      <p class="page-subtitle">Комната «{{ room.name }}» вмещает до {{ room.capacity }} участников.</p>
+    </header>
+
+    <form class="panel" method="post">
+      {% csrf_token %}
+
+      {% if form.non_field_errors %}
+        <div class="alert alert-danger" role="alert">
+          {% for error in form.non_field_errors %}{{ error }}{% if not forloop.last %}<br>{% endif %}{% endfor %}
+        </div>
+      {% endif %}
+
+      <div class="form-grid">
+        {% for field in form %}
+          <label class="field">
+            <span class="form-label">{{ field.label }}</span>
+            {{ field }}
+            {% if field.errors %}
+              <span class="text-danger">{{ field.errors|join:" " }}</span>
+            {% endif %}
+          </label>
+        {% endfor %}
+      </div>
+
+      <div class="button-row mt-24">
+        <button class="btn btn-primary" type="submit">{{ submit_label }}</button>
+        <a class="btn btn-outline" href="{{ room.get_absolute_url }}">Отмена</a>
+      </div>
+    </form>
+  </div>
+</main>
+{% endblock %}

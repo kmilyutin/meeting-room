@@ -3,95 +3,14 @@ from datetime import datetime, time, timedelta
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
+from django.db import transaction
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 
-from accounts.models import User
+from rooms.forms import BookingForm
 from rooms.models import Booking, Equipment, Room
-
-
-ROOM_IMAGES = [
-    'rooms_images/room-card-placeholder.png',
-    'rooms_images/room-card-placeholder_1DVNKL5.png',
-    'rooms_images/room-card-placeholder_4WXfsmj.png',
-]
-
-
-def ensure_demo_data():
-    user, created = User.objects.get_or_create(
-        username='sonya',
-        defaults={'email': 'sonya@example.com'},
-    )
-    if created or not user.has_usable_password():
-        user.set_password('booked12345')
-        user.save()
-
-    equipment_names = ['Экран', 'Wi-Fi', 'Проектор', 'Доска', 'HDMI', 'Флипчарт']
-    equipment = {
-        name: Equipment.objects.get_or_create(name=name, defaults={'description': ''})[0]
-        for name in equipment_names
-    }
-
-    rooms_data = [
-        ('Алтай', 8, 'Комната для встреч, созвонов и командной работы.', 'available', ['Экран', 'Wi-Fi', 'Доска']),
-        ('Байкал', 12, 'Просторная комната с проектором для презентаций.', 'busy', ['Проектор', 'Доска', 'HDMI']),
-        ('Онега', 4, 'Небольшая комната для быстрых синков и интервью.', 'available', ['Wi-Fi', 'Экран']),
-        ('Север', 6, 'Комната временно закрыта на обслуживание.', 'unavailable', ['Wi-Fi', 'HDMI']),
-        ('Ладога', 10, 'Тихая переговорная для рабочих сессий и воркшопов.', 'available', ['Флипчарт', 'Доска']),
-        ('Кама', 5, 'Компактная комната рядом с open space.', 'available', ['Экран', 'HDMI']),
-        ('Енисей', 16, 'Большая переговорная для общих встреч.', 'busy', ['Проектор', 'Экран', 'Wi-Fi']),
-    ]
-
-    for index, (name, capacity, description, status, item_names) in enumerate(rooms_data):
-        room, _ = Room.objects.get_or_create(
-            name=name,
-            defaults={
-                'capacity': capacity,
-                'description': description,
-                'status': status,
-                'image': ROOM_IMAGES[index % len(ROOM_IMAGES)],
-            },
-        )
-        changed = False
-        for field, value in {
-            'capacity': capacity,
-            'description': description,
-            'status': status,
-        }.items():
-            if getattr(room, field) != value:
-                setattr(room, field, value)
-                changed = True
-        if not room.image:
-            room.image = ROOM_IMAGES[index % len(ROOM_IMAGES)]
-            changed = True
-        if changed:
-            room.save()
-        room.equipment.set([equipment[item_name] for item_name in item_names])
-
-    day = timezone.localdate() + timedelta(days=1)
-    booking_specs = [
-        ('Планерка продукта', 'Алтай', time(9, 0), time(10, 0), 'Ежедневная встреча команды.'),
-        ('Демо для команды', 'Алтай', time(10, 0), time(11, 0), 'Бронь с доступным продлением.'),
-        ('Интервью', 'Байкал', time(12, 30), time(13, 30), 'Встреча с кандидатом.'),
-        ('Ретро', 'Онега', time(14, 0), time(15, 0), 'Командная ретроспектива.'),
-    ]
-    for title, room_name, start, end, description in booking_specs:
-        room = Room.objects.get(name=room_name)
-        start_at = timezone.make_aware(datetime.combine(day, start), timezone.get_current_timezone())
-        end_at = timezone.make_aware(datetime.combine(day, end), timezone.get_current_timezone())
-        Booking.objects.get_or_create(
-            name=title,
-            defaults={
-                'start_time': start_at,
-                'end_time': end_at,
-                'description': description,
-                'organizer': user,
-                'room': room,
-            },
-        )
 
 
 def parse_date(value):
@@ -119,14 +38,17 @@ def make_dt(day, value):
     return timezone.make_aware(datetime.combine(day, parsed), timezone.get_current_timezone())
 
 
-def room_has_conflict(room, start_at, end_at):
+def room_has_conflict(room, start_at, end_at, exclude_booking=None):
     if not start_at or not end_at or end_at <= start_at:
         return False
-    return Booking.objects.filter(
+    conflicts = Booking.objects.filter(
         room=room,
         start_time__lt=end_at,
         end_time__gt=start_at,
-    ).exists()
+    )
+    if exclude_booking is not None:
+        conflicts = conflicts.exclude(pk=exclude_booking.pk)
+    return conflicts.exists()
 
 
 def decorate_room(room, start_at=None, end_at=None):
@@ -146,15 +68,19 @@ def decorate_room(room, start_at=None, end_at=None):
 
 
 def get_equipment_choices():
-    return Equipment.objects.exclude(name__iexact='Видеосвязь').order_by('name')
+    return Equipment.objects.order_by('name')
+
+
+def day_bounds(day):
+    start_at = timezone.make_aware(datetime.combine(day, time.min), timezone.get_current_timezone())
+    return start_at, start_at + timedelta(days=1)
 
 
 def get_timeline(day):
-    start_at = timezone.make_aware(datetime.combine(day, time.min), timezone.get_current_timezone())
-    end_at = start_at + timedelta(days=1)
-    bookings = Booking.objects.select_related('room', 'organizer').filter(
-        start_time__gte=start_at,
+    start_at, end_at = day_bounds(day)
+    bookings = Booking.objects.select_related('room').filter(
         start_time__lt=end_at,
+        end_time__gt=start_at,
     ).order_by('start_time')
     rows = []
     for booking in bookings:
@@ -168,47 +94,62 @@ def get_timeline(day):
         })
     if not rows:
         rows.append({
-            'time': '09:00',
+            'time': '—',
             'title': 'Свободный день',
             'room': 'Все доступные переговорные',
-            'range': '09:00-18:00',
+            'range': 'весь день',
             'status': 'available',
             'status_label': 'Свободно',
         })
-    rows.append({
-        'time': '16:00',
-        'title': 'Техобслуживание',
-        'room': 'Север',
-        'range': 'до конца дня',
-        'status': 'unavailable',
-        'status_label': 'Недоступно',
-    })
     return rows
 
 
 def index(request):
-    ensure_demo_data()
     selected_date = parse_date(request.GET.get('date'))
-    start_at = make_dt(selected_date, request.GET.get('start_time'))
-    end_at = make_dt(selected_date, request.GET.get('end_time'))
+    start_raw = request.GET.get('start_time', '').strip()
+    end_raw = request.GET.get('end_time', '').strip()
+    participants_raw = request.GET.get('participants', '').strip()
     selected_equipment = request.GET.getlist('equipment')
     custom_equipment = request.GET.get('equipment_other', '').strip()
-    participants = request.GET.get('participants')
 
-    rooms = Room.objects.prefetch_related('equipment').all().order_by('name')
-    if participants:
-        try:
-            rooms = rooms.filter(capacity__gte=int(participants))
-        except ValueError:
-            pass
-    if selected_equipment:
+    errors = []
+    start_at = None
+    end_at = None
+    if start_raw or end_raw:
+        if not (start_raw and end_raw):
+            errors.append('Укажите и время начала, и время окончания.')
+        else:
+            start_at = make_dt(selected_date, start_raw)
+            end_at = make_dt(selected_date, end_raw)
+            if start_at is None or end_at is None:
+                errors.append('Время указано в неверном формате.')
+            elif end_at <= start_at:
+                errors.append('Время окончания должно быть позже времени начала.')
+
+    participants = None
+    if participants_raw:
+        if participants_raw.isdigit() and int(participants_raw) > 0:
+            participants = int(participants_raw)
+        else:
+            errors.append('Количество участников должно быть положительным числом.')
+
+    if errors:
+        for error in errors:
+            messages.error(request, error)
+        decorated_rooms = []
+    else:
+        rooms = Room.objects.prefetch_related('equipment').filter(status='available')
+        if participants:
+            rooms = rooms.filter(capacity__gte=participants)
         for item_name in selected_equipment:
             rooms = rooms.filter(equipment__name__iexact=item_name)
-    if custom_equipment:
-        rooms = rooms.filter(equipment__name__icontains=custom_equipment)
+        if custom_equipment:
+            rooms = rooms.filter(equipment__name__icontains=custom_equipment)
 
-    rooms = list(rooms.distinct())
-    decorated_rooms = [decorate_room(room, start_at, end_at) for room in rooms]
+        rooms = rooms.distinct().order_by('capacity', 'name')
+        decorated_rooms = [decorate_room(room, start_at, end_at) for room in rooms]
+        if start_at and end_at:
+            decorated_rooms = [room for room in decorated_rooms if room.can_book]
 
     context = {
         'title': 'Поиск переговорной - Booked!',
@@ -223,7 +164,6 @@ def index(request):
 
 
 def room_list(request):
-    ensure_demo_data()
     rooms = Room.objects.prefetch_related('equipment').all().order_by('name')
     query = request.GET.get('q', '').strip()
     capacity = request.GET.get('capacity', '').strip()
@@ -254,12 +194,14 @@ def room_list(request):
 
 
 def room_detail(request, pk):
-    ensure_demo_data()
     room = decorate_room(get_object_or_404(Room.objects.prefetch_related('equipment'), pk=pk))
     day = parse_date(request.GET.get('date'))
-    start_at = timezone.make_aware(datetime.combine(day, time.min), timezone.get_current_timezone())
-    end_at = start_at + timedelta(days=1)
-    bookings = Booking.objects.filter(room=room, start_time__gte=start_at, start_time__lt=end_at)
+    start_at, end_at = day_bounds(day)
+    bookings = Booking.objects.filter(
+        room=room,
+        start_time__lt=end_at,
+        end_time__gt=start_at,
+    ).order_by('start_time')
 
     context = {
         'title': f'{room.name} - Booked!',
@@ -270,43 +212,128 @@ def room_detail(request, pk):
     return render(request, 'rooms/detail.html', context)
 
 
+def build_booking_initial(request):
+    initial = {}
+    day = parse_date(request.GET.get('date'))
+    start_at = make_dt(day, request.GET.get('start_time'))
+    end_at = make_dt(day, request.GET.get('end_time'))
+    if start_at:
+        initial['start_time'] = timezone.localtime(start_at).strftime('%Y-%m-%dT%H:%M')
+    if end_at:
+        initial['end_time'] = timezone.localtime(end_at).strftime('%Y-%m-%dT%H:%M')
+    participants = request.GET.get('participants', '')
+    if participants.isdigit() and int(participants) > 0:
+        initial['participants'] = int(participants)
+    return initial
+
+
 @login_required
 def book_room(request, pk):
-    ensure_demo_data()
     room = get_object_or_404(Room, pk=pk)
 
-    query = request.GET.copy()
-    query['room'] = room.pk
-    redirect_url = reverse('rooms:index')
-    if query:
-        redirect_url = f'{redirect_url}?{query.urlencode()}'
+    if request.method == 'POST':
+        form = BookingForm(request.POST, room=room)
+        if form.is_valid():
+            with transaction.atomic():
+                Room.objects.select_for_update().get(pk=room.pk)
+                start_time = form.cleaned_data['start_time']
+                end_time = form.cleaned_data['end_time']
+                if room_has_conflict(room, start_time, end_time):
+                    form.add_error(None, 'Комната уже забронирована на выбранное время.')
+                else:
+                    booking = form.save(commit=False)
+                    booking.organizer = request.user
+                    booking.save()
+                    messages.success(request, f'Переговорная {room.name} забронирована.')
+                    return redirect('rooms:my_bookings')
+    else:
+        form = BookingForm(room=room, initial=build_booking_initial(request))
 
-    messages.info(request, f'Выберите дату и время для бронирования переговорной {room.name}.')
-    return redirect(redirect_url)
+    context = {
+        'title': f'Бронирование {room.name} - Booked!',
+        'room': room,
+        'form': form,
+        'heading': f'Бронирование переговорной {room.name}',
+        'submit_label': 'Забронировать',
+    }
+    return render(request, 'rooms/booking_form.html', context)
 
 
-def can_extend(booking):
-    next_booking = Booking.objects.filter(
+@login_required
+def edit_booking(request, pk):
+    booking = get_object_or_404(Booking.objects.select_related('room'), pk=pk, organizer=request.user)
+    room = booking.room
+
+    if request.method == 'POST':
+        form = BookingForm(request.POST, instance=booking, room=room)
+        if form.is_valid():
+            with transaction.atomic():
+                Room.objects.select_for_update().get(pk=room.pk)
+                start_time = form.cleaned_data['start_time']
+                end_time = form.cleaned_data['end_time']
+                if room_has_conflict(room, start_time, end_time, exclude_booking=booking):
+                    form.add_error(None, 'Комната уже забронирована на выбранное время.')
+                else:
+                    form.save()
+                    messages.success(request, 'Бронь обновлена.')
+                    return redirect('rooms:my_bookings')
+    else:
+        form = BookingForm(instance=booking, room=room)
+
+    context = {
+        'title': 'Изменение брони - Booked!',
+        'room': room,
+        'form': form,
+        'heading': f'Изменение брони «{booking.name}»',
+        'submit_label': 'Сохранить изменения',
+    }
+    return render(request, 'rooms/booking_form.html', context)
+
+
+@login_required
+def delete_booking(request, pk):
+    booking = get_object_or_404(Booking.objects.select_related('room'), pk=pk, organizer=request.user)
+
+    if request.method == 'POST':
+        booking.delete()
+        messages.success(request, 'Бронь удалена.')
+        return redirect('rooms:my_bookings')
+
+    context = {
+        'title': 'Удаление брони - Booked!',
+        'booking': booking,
+    }
+    return render(request, 'rooms/booking_confirm_delete.html', context)
+
+
+_UNSET = object()
+
+
+def get_next_booking(booking):
+    return Booking.objects.filter(
         room=booking.room,
         start_time__gte=booking.end_time,
     ).exclude(pk=booking.pk).order_by('start_time').first()
+
+
+def can_extend(booking, next_booking=_UNSET):
+    if booking.end_time <= timezone.now():
+        return False
+    if next_booking is _UNSET:
+        next_booking = get_next_booking(booking)
     target_end = booking.end_time + timedelta(minutes=30)
     return next_booking is None or next_booking.start_time >= target_end
 
 
 @login_required
 def my_bookings(request):
-    ensure_demo_data()
     bookings = Booking.objects.select_related('room').filter(organizer=request.user).order_by('start_time')
     booking_rows = []
     for booking in bookings:
-        next_booking = Booking.objects.filter(
-            room=booking.room,
-            start_time__gte=booking.end_time,
-        ).exclude(pk=booking.pk).order_by('start_time').first()
+        next_booking = get_next_booking(booking)
         booking_rows.append({
             'booking': booking,
-            'can_extend': can_extend(booking),
+            'can_extend': can_extend(booking, next_booking),
             'free_until': next_booking.start_time if next_booking else None,
         })
     context = {
@@ -320,7 +347,9 @@ def my_bookings(request):
 @login_required
 def extend_booking(request, pk):
     booking = get_object_or_404(Booking, pk=pk, organizer=request.user)
-    if can_extend(booking):
+    if booking.end_time <= timezone.now():
+        messages.warning(request, 'Нельзя продлить уже завершившуюся встречу.')
+    elif can_extend(booking):
         booking.end_time = booking.end_time + timedelta(minutes=30)
         booking.save(update_fields=['end_time'])
         messages.success(request, 'Бронь продлена на 30 минут.')
