@@ -100,6 +100,39 @@
         </div>
       {% endif %}
     </section>
+
+    {% if alternative_rooms %}
+      <section class="results-section">
+        <div class="section-heading">
+          <p class="eyebrow">Альтернативы</p>
+          <h2 class="section-title">Свободные комнаты с похожим оснащением</h2>
+        </div>
+        <div class="room-grid">
+          {% for room in alternative_rooms %}
+            {% include 'rooms/_room_card.html' with room=room %}
+          {% endfor %}
+        </div>
+      </section>
+    {% elif nearest_slots %}
+      <section class="results-section">
+        <div class="section-heading">
+          <p class="eyebrow">Ближайшее время</p>
+          <h2 class="section-title">Подходящие свободные интервалы</h2>
+        </div>
+        <div class="timeline">
+          {% for slot in nearest_slots %}
+            <div class="timeline-row timeline-row_free">
+              <span class="timeline-time">{{ slot.start|date:"H:i" }}</span>
+              <div>
+                <strong>{{ slot.room.name }}</strong>
+                <div class="timeline-room">{{ slot.range }}</div>
+              </div>
+              <a class="btn btn-primary" href="{% url 'rooms:book_room' slot.room.pk %}?date={{ selected_date }}&amp;start_time={{ slot.start|date:'H:i' }}&amp;end_time={{ slot.end|date:'H:i' }}{% if request.GET.participants %}&amp;participants={{ request.GET.participants }}{% endif %}">Выбрать</a>
+            </div>
+          {% endfor %}
+        </div>
+      </section>
+    {% endif %}
   </div>
 </main>
 {% endblock %}

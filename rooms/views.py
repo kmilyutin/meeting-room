@@ -2,15 +2,20 @@ from datetime import datetime, time, timedelta
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.core.paginator import Paginator
 from django.db import transaction
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
+from django.views.generic import DetailView, ListView
 from django.views.decorators.http import require_POST
 
 from rooms.forms import BookingForm
 from rooms.models import Booking, Equipment, Room
+
+
+WORKDAY_START = time(hour=9)
+WORKDAY_END = time(hour=20)
+MIN_FREE_SLOT = timedelta(minutes=30)
 
 
 def parse_date(value):
@@ -76,6 +81,82 @@ def day_bounds(day):
     return start_at, start_at + timedelta(days=1)
 
 
+def workday_bounds(day):
+    current_timezone = timezone.get_current_timezone()
+    return (
+        timezone.make_aware(datetime.combine(day, WORKDAY_START), current_timezone),
+        timezone.make_aware(datetime.combine(day, WORKDAY_END), current_timezone),
+    )
+
+
+def get_room_schedule(room, day):
+    workday_start, workday_end = workday_bounds(day)
+    bookings = list(Booking.objects.filter(
+        room=room,
+        start_time__lt=workday_end,
+        end_time__gt=workday_start,
+    ).order_by('start_time'))
+    rows = []
+    cursor = workday_start
+
+    for booking in bookings:
+        busy_start = max(booking.start_time, workday_start)
+        busy_end = min(booking.end_time, workday_end)
+        if busy_start - cursor >= MIN_FREE_SLOT:
+            rows.append({
+                'start': cursor,
+                'end': busy_start,
+                'range': f'{timezone.localtime(cursor):%H:%M}–{timezone.localtime(busy_start):%H:%M}',
+                'title': 'Свободно',
+                'status': 'available',
+                'status_label': 'Свободно',
+            })
+        rows.append({
+            'start': busy_start,
+            'end': busy_end,
+            'range': f'{timezone.localtime(busy_start):%H:%M}–{timezone.localtime(busy_end):%H:%M}',
+            'title': booking.name,
+            'status': 'busy',
+            'status_label': 'Занято',
+            'booking': booking,
+        })
+        cursor = max(cursor, busy_end)
+
+    if workday_end - cursor >= MIN_FREE_SLOT:
+        rows.append({
+            'start': cursor,
+            'end': workday_end,
+            'range': f'{timezone.localtime(cursor):%H:%M}–{timezone.localtime(workday_end):%H:%M}',
+            'title': 'Свободно',
+            'status': 'available',
+            'status_label': 'Свободно',
+        })
+    return rows
+
+
+def get_nearest_slots(rooms, day, requested_start, requested_end, limit=3):
+    required_duration = requested_end - requested_start
+    candidates = []
+    for room in rooms:
+        for row in get_room_schedule(room, day):
+            if row['status'] != 'available':
+                continue
+            candidate_start = max(row['start'], requested_start)
+            candidate_end = candidate_start + required_duration
+            if candidate_end <= row['end']:
+                candidates.append({
+                    'room': room,
+                    'start': candidate_start,
+                    'end': candidate_end,
+                    'range': (
+                        f'{timezone.localtime(candidate_start):%H:%M}–'
+                        f'{timezone.localtime(candidate_end):%H:%M}'
+                    ),
+                })
+                break
+    return sorted(candidates, key=lambda item: (item['start'], item['room'].name))[:limit]
+
+
 def get_timeline(day):
     start_at, end_at = day_bounds(day)
     bookings = Booking.objects.select_related('room').filter(
@@ -137,6 +218,8 @@ def index(request):
         for error in errors:
             messages.error(request, error)
         decorated_rooms = []
+        alternative_rooms = []
+        nearest_slots = []
     else:
         rooms = Room.objects.prefetch_related('equipment').filter(status='available')
         if participants:
@@ -151,6 +234,41 @@ def index(request):
         if start_at and end_at:
             decorated_rooms = [room for room in decorated_rooms if room.can_book]
 
+        alternative_rooms = []
+        nearest_slots = []
+        if start_at and end_at and not decorated_rooms:
+            compatible_rooms = Room.objects.prefetch_related('equipment').filter(
+                status='available'
+            )
+            if participants:
+                compatible_rooms = compatible_rooms.filter(capacity__gte=participants)
+            compatible_rooms = list(compatible_rooms.distinct())
+            available_rooms = [
+                decorate_room(room, start_at, end_at)
+                for room in compatible_rooms
+                if not room_has_conflict(room, start_at, end_at)
+            ]
+            requested_equipment = {name.casefold() for name in selected_equipment}
+            if custom_equipment:
+                requested_equipment.add(custom_equipment.casefold())
+            for room in available_rooms:
+                equipment_names = {item.name.casefold() for item in room.equipment.all()}
+                room.matched_equipment = sum(
+                    any(requested in name for name in equipment_names)
+                    for requested in requested_equipment
+                )
+            alternative_rooms = sorted(
+                available_rooms,
+                key=lambda room: (-room.matched_equipment, room.capacity, room.name),
+            )[:3]
+            if not alternative_rooms:
+                nearest_slots = get_nearest_slots(
+                    compatible_rooms,
+                    selected_date,
+                    start_at,
+                    end_at,
+                )
+
     context = {
         'title': 'Поиск переговорной - Booked!',
         'rooms': decorated_rooms,
@@ -159,57 +277,79 @@ def index(request):
         'selected_date': selected_date.strftime('%Y-%m-%d'),
         'timeline_day': selected_date,
         'timeline_rows': get_timeline(selected_date),
+        'alternative_rooms': alternative_rooms,
+        'nearest_slots': nearest_slots,
     }
     return render(request, 'rooms/index.html', context)
 
 
-def room_list(request):
-    rooms = Room.objects.prefetch_related('equipment').all().order_by('name')
-    query = request.GET.get('q', '').strip()
-    capacity = request.GET.get('capacity', '').strip()
-    status = request.GET.get('status', '').strip()
+class RoomListView(ListView):
+    model = Room
+    template_name = 'rooms/list.html'
+    context_object_name = 'rooms'
+    paginate_by = 6
 
-    if query:
-        rooms = rooms.filter(Q(name__icontains=query) | Q(description__icontains=query) | Q(equipment__name__icontains=query))
-    if capacity:
-        try:
-            rooms = rooms.filter(capacity__gte=int(capacity))
-        except ValueError:
-            pass
-    if status:
-        rooms = rooms.filter(status=status)
+    def get_queryset(self):
+        rooms = Room.objects.prefetch_related('equipment').all().order_by('name')
+        query = self.request.GET.get('q', '').strip()
+        capacity = self.request.GET.get('capacity', '').strip()
+        status = self.request.GET.get('status', '').strip()
+        if query:
+            rooms = rooms.filter(
+                Q(name__icontains=query)
+                | Q(description__icontains=query)
+                | Q(equipment__name__icontains=query)
+            )
+        if capacity:
+            try:
+                rooms = rooms.filter(capacity__gte=int(capacity))
+            except ValueError:
+                pass
+        if status:
+            rooms = rooms.filter(status=status)
+        return rooms.distinct()
 
-    paginator = Paginator(rooms.distinct(), 6)
-    page_obj = paginator.get_page(request.GET.get('page'))
-    for room in page_obj:
-        decorate_room(room)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        for room in context['rooms']:
+            decorate_room(room)
+        query_params = self.request.GET.copy()
+        query_params.pop('page', None)
+        context.update({
+            'title': 'Переговорные - Booked!',
+            'status_choices': Room.ROOM_STATUS_CHOICES,
+            'pagination_query': query_params.urlencode(),
+        })
+        return context
 
-    context = {
-        'title': 'Переговорные - Booked!',
-        'page_obj': page_obj,
-        'rooms': page_obj.object_list,
-        'status_choices': Room.ROOM_STATUS_CHOICES,
-    }
-    return render(request, 'rooms/list.html', context)
 
+class RoomDetailView(DetailView):
+    model = Room
+    template_name = 'rooms/detail.html'
+    context_object_name = 'room'
 
-def room_detail(request, pk):
-    room = decorate_room(get_object_or_404(Room.objects.prefetch_related('equipment'), pk=pk))
-    day = parse_date(request.GET.get('date'))
-    start_at, end_at = day_bounds(day)
-    bookings = Booking.objects.filter(
-        room=room,
-        start_time__lt=end_at,
-        end_time__gt=start_at,
-    ).order_by('start_time')
+    def get_queryset(self):
+        return Room.objects.prefetch_related('equipment')
 
-    context = {
-        'title': f'{room.name} - Booked!',
-        'room': room,
-        'bookings': bookings,
-        'timeline_day': day,
-    }
-    return render(request, 'rooms/detail.html', context)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        room = decorate_room(context['room'])
+        day = parse_date(self.request.GET.get('date'))
+        start_at, end_at = day_bounds(day)
+        bookings = Booking.objects.filter(
+            room=room,
+            start_time__lt=end_at,
+            end_time__gt=start_at,
+        ).order_by('start_time')
+        context.update({
+            'title': f'{room.name} - Booked!',
+            'room': room,
+            'bookings': bookings,
+            'timeline_day': day,
+            'selected_date': day.strftime('%Y-%m-%d'),
+            'schedule_rows': get_room_schedule(room, day),
+        })
+        return context
 
 
 def build_booking_initial(request):
