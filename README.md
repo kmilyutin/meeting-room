@@ -55,7 +55,7 @@ python manage.py createsuperuser
 python manage.py runserver
 ```
 
-Для локального запуска оставьте `DB_HOST=localhost`. Docker Compose самостоятельно заменяет его на `db` внутри контейнера приложения.
+Для локального запуска замените `DB_HOST=db` на `DB_HOST=localhost`. В Docker оставьте `DB_HOST=db`.
 
 ## Тесты
 
@@ -83,5 +83,5 @@ docker compose -f docker/docker-compose.yml exec web coverage report --fail-unde
 ## Документация
 
 - Модели: `User`, `Room`, `Booking`, `Equipment`; используются ForeignKey и ManyToManyField.
-- Схема БД: `ER_diagram.drawio`.
-- Декомпозиция: `DECOMPOSITION.md`.
+- Схема БД: `docs/ER_diagram.drawio`.
+- Декомпозиция: `docs/DECOMPOSITION.md`.
