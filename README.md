@@ -75,7 +75,7 @@
 Остановка:
 
 ```bash
-docker compose -f docker/docker-compose.yml down
+docker-compose -f docker/docker-compose.yml down
 ```
 
 ---
@@ -83,7 +83,7 @@ docker compose -f docker/docker-compose.yml down
 ## Тесты 
    Запуск тестов :
    ```bash
-   docker-compose -f docker/docker-compose.yml exec web pytest
+   docker-compose -f docker/docker-compose.yml exec web python manage.py test
    ```
 
 ---
@@ -104,9 +104,11 @@ docker compose -f docker/docker-compose.yml down
 
 ## Скриншоты
 
+
 ![Главная страница](media/screenshots/index.png)
 
 *Главная страница содержит форму поиска с фильтрацией по дате, времени, количеству участников и инвентарю, а также таймлайн с расписанием бронирований на выбранную дату.*
+
 
 
 ![Каталог переговорных](media/screenshots/meeting_rooms.png)
@@ -114,14 +116,17 @@ docker compose -f docker/docker-compose.yml down
 *Список всех переговорных комнат с пагинацией (5-10 элементов на страницу), фильтрацией по вместимости и статусу, а также отображением доступного оборудования.*
 
 
+
 ![Мои бронирования](media/screenshots/my_bookings.png)
 
 *Личный кабинет пользователя со списком всех его бронирований. Доступны функции продления, редактирования и удаления бронирования.*
 
 
+
 ![Мой профиль](media/screenshots/my_profile.png)
 
 *Страница управления профилем пользователя: изменение логина, email и пароля. После смены пароля активная сессия сохраняется.*
+
 
 ---
 
