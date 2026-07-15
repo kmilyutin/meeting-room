@@ -9,7 +9,7 @@ class EquipmentAdmin(admin.ModelAdmin):
 @admin.register(Room)
 class RoomAdmin(admin.ModelAdmin):
     list_display = ('name', 'capacity', 'status')
-    list_filter = ('status', 'capacity') # фильтрация по вместимости
+    list_filter = ('status', 'capacity')
     search_fields = ('name',)
     filter_horizontal = ('equipment',)
 
@@ -17,5 +17,5 @@ class RoomAdmin(admin.ModelAdmin):
 class BookingAdmin(admin.ModelAdmin):
     list_display = ('name', 'room', 'organizer', 'start_time', 'end_time')
     list_filter = ('room', 'start_time')
-    search_fields = ('name', 'organizer__username', 'room__name') # Поиск по имени брони, юзеру и комнате
+    search_fields = ('name', 'organizer__username', 'room__name')
     raw_id_fields = ('organizer', 'room')

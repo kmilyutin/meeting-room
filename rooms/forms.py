@@ -1,5 +1,6 @@
 from django import forms
 from django.utils import timezone
+from datetime import time
 
 from rooms.models import Booking
 
@@ -59,6 +60,15 @@ class BookingForm(forms.ModelForm):
         self.room = selected_room
         start_time = cleaned_data.get('start_time')
         end_time = cleaned_data.get('end_time')
+
+        if start_time and end_time:
+            start_t = start_time.time()
+            end_t = end_time.time()
+            work_start = time(9, 0)
+            work_end = time(20, 0)
+
+            if not (work_start <= start_t <= work_end and work_start <= end_t <= work_end):
+                raise forms.ValidationError('Бронирование возможно только в рабочее время с 09:00 до 20:00.')
 
         if start_time and end_time and end_time <= start_time:
             self.add_error('end_time', 'Время окончания должно быть позже времени начала.')
