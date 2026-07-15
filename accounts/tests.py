@@ -22,47 +22,96 @@ class AccountViewTests(TestCase):
             reverse('accounts:register'),
             self.registration_data(),
         )
+
         self.assertRedirects(response, reverse('accounts:login'))
-        self.assertTrue(User.objects.filter(username='new-user').exists())
+        self.assertTrue(
+            User.objects.filter(username='new-user').exists(),
+        )
 
     def test_registration_rejects_duplicate_username(self):
-        User.objects.create_user(username='new-user', password='StrongPass123!')
+        User.objects.create_user(
+            username='new-user',
+            password='StrongPass123!',
+        )
+
         response = self.client.post(
             reverse('accounts:register'),
             self.registration_data(),
         )
+
         self.assertEqual(response.status_code, 200)
-        self.assertIn('username', response.context['form'].errors)
-        self.assertEqual(User.objects.filter(username='new-user').count(), 1)
+        self.assertIn(
+            'username',
+            response.context['form'].errors,
+        )
+        self.assertEqual(
+            User.objects.filter(username='new-user').count(),
+            1,
+        )
 
     def test_login_accepts_valid_credentials(self):
-        user = User.objects.create_user(username='member', password='StrongPass123!')
+        user = User.objects.create_user(
+            username='member',
+            password='StrongPass123!',
+        )
+
         response = self.client.post(
             reverse('accounts:login'),
-            {'username': 'member', 'password': 'StrongPass123!'},
+            {
+                'username': 'member',
+                'password': 'StrongPass123!',
+            },
         )
+
         self.assertRedirects(response, reverse('rooms:index'))
-        self.assertEqual(int(self.client.session['_auth_user_id']), user.pk)
+        self.assertEqual(
+            int(self.client.session['_auth_user_id']),
+            user.pk,
+        )
 
     def test_login_rejects_invalid_password(self):
-        User.objects.create_user(username='member', password='StrongPass123!')
+        User.objects.create_user(
+            username='member',
+            password='StrongPass123!',
+        )
+
         response = self.client.post(
             reverse('accounts:login'),
-            {'username': 'member', 'password': 'wrong-password'},
+            {
+                'username': 'member',
+                'password': 'wrong-password',
+            },
         )
+
         self.assertEqual(response.status_code, 200)
         self.assertNotIn('_auth_user_id', self.client.session)
         self.assertTrue(response.context['form'].errors)
 
     def test_logout_ends_session(self):
-        user = User.objects.create_user(username='member', password='StrongPass123!')
+        user = User.objects.create_user(
+            username='member',
+            password='StrongPass123!',
+        )
         self.client.force_login(user)
-        response = self.client.get(reverse('accounts:logout'))
-        self.assertEqual(response.status_code, 200)
-        self.assertNotIn('_auth_user_id', self.client.session)
+
+        response = self.client.post(
+            reverse('accounts:logout'),
+        )
+
+        self.assertRedirects(
+            response,
+            reverse('rooms:index'),
+        )
+        self.assertNotIn(
+            '_auth_user_id',
+            self.client.session,
+        )
 
     def test_profile_requires_login(self):
-        response = self.client.get(reverse('accounts:profile'))
+        response = self.client.get(
+            reverse('accounts:profile'),
+        )
+
         self.assertRedirects(
             response,
             f"{reverse('accounts:login')}?next={reverse('accounts:profile')}",
@@ -75,10 +124,16 @@ class AccountViewTests(TestCase):
             password='StrongPass123!',
         )
         self.client.force_login(user)
-        response = self.client.get(reverse('accounts:profile'))
+
+        response = self.client.get(
+            reverse('accounts:profile'),
+        )
+
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'member@example.com')
 
     def test_user_string_is_username(self):
         user = User(username='member')
+
         self.assertEqual(str(user), 'member')
+        
