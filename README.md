@@ -137,5 +137,6 @@ docker-compose -f docker/docker-compose.yml down
 
 ## Документация
 
-- Схема БД: См. файл /docs/ER_diagram.drawio.
-- Декомпозиция: См. файл /docs/DECOMPOSITION.md.
+- Схема БД: см. файлы [ER_diagram.drawio](ER_diagram.drawio) и [ER_diagram.png](ER_diagram.png).
+- Схема сервисов (слои приложения) и схема взаимодействия: см. [ARCHITECTURE.md](ARCHITECTURE.md).
+- Декомпозиция: см. [DECOMPOSITION.md](DECOMPOSITION.md).
