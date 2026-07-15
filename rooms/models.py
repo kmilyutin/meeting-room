@@ -1,5 +1,7 @@
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
+from django.contrib.postgres.constraints import ExclusionConstraint
+from django.contrib.postgres.fields import RangeOperators
 from django.db import models
 from django.db.models import F, Q
 from django.urls import reverse
@@ -50,7 +52,17 @@ class Booking(models.Model):
 
     class Meta:
         constraints = [
-            models.CheckConstraint(condition=Q(end_time__gt=F('start_time')), name='booking_end_after_start'),
+            models.CheckConstraint(
+                condition=Q(end_time__gt=F('start_time')), 
+                name='booking_end_after_start'
+            ),
+            ExclusionConstraint(
+                name='exclude_overlapping_bookings',
+                expressions=[
+                    ('room', RangeOperators.EQUAL),
+                    (models.Func(models.F('start_time'), models.F('end_time'), function='tstzrange'), RangeOperators.OVERLAPS),
+                ],
+            ),
         ]
 
     def clean(self):
