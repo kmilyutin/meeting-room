@@ -35,7 +35,12 @@
 
           {% if user.is_authenticated %}
             <span class="user-chip">{{ user.username }}</span>
-            <a class="btn btn-outline" href="{% url 'accounts:logout' %}">Выйти</a>
+
+            <form method="post" action="{% url 'accounts:logout' %}" style="display: inline;">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-outline">Выйти</button>
+            </form>
+            
           {% else %}
             <a class="btn btn-outline" href="{% url 'accounts:login' %}">Войти</a>
             <a class="btn btn-primary" href="{% url 'accounts:register' %}">Регистрация</a>

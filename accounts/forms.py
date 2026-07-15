@@ -1,5 +1,7 @@
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django import forms
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 
 from accounts.models import User
 
@@ -13,19 +15,15 @@ class UserLoginForm(AuthenticationForm):
         'placeholder': "Введите пароль",
     }))
 
-    class Meta:
-        model = User,
-        fields = ('username', 'password')
-
 class UserRegistrationForm(UserCreationForm):
     username = forms.CharField(label="Имя пользователя", widget=forms.TextInput(attrs={
         'class': "form-control",
         'placeholder': "Введите имя пользователя",
     }))
-    email = forms.CharField(label="Email", widget=forms.EmailInput(attrs={
-        'class': "form-control",
-        'placeholder': "name@example.com",
-    }))
+    email = forms.EmailField(
+        label="Email",
+        widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'name@example.com'})
+    )
     password1 = forms.CharField(label="Пароль", widget=forms.PasswordInput(attrs={
         'class': "form-control",
         'placeholder': "Придумайте пароль",
@@ -74,11 +72,15 @@ class ProfileForm(forms.ModelForm):
         cleaned_data = super().clean()
         password1 = cleaned_data.get('password1')
         password2 = cleaned_data.get('password2')
-        if password1 or password2:
+
+        if password1:
             if password1 != password2:
                 self.add_error('password2', 'Пароли не совпадают.')
-            elif len(password1) < 8:
-                self.add_error('password1', 'Пароль должен быть не короче 8 символов.')
+            try:
+                validate_password(password1)
+            except ValidationError as e:
+                self.add_error('password1', e.messages)
+                
         return cleaned_data
 
     def save(self, commit=True):
