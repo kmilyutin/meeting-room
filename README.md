@@ -57,18 +57,23 @@
 
 ### 3. **Запустить проект через Docker:**
    ```bash
-   docker-compose -f docker/docker-compose.yml up --build
+   docker compose -f docker/docker-compose.yml build
    ```
 
 ### 4. **Выполнить миграции:**
    ```bash
-   docker-compose -f docker/docker-compose.yml exec web python manage.py migrate
+ docker compose -f docker/docker-compose.yml exec web python manage.py migrate
    ```
 
-### 5. **Создать суперпользователя:**
+### 5. **Подключить данные:**
    ```bash
-   docker-compose -f docker/docker-compose.yml exec web python manage.py createsuperuser
+   docker compose -f docker/docker-compose.yml exec web python manage.py loaddata equipment
+
+   docker compose -f docker/docker-compose.yml exec web python manage.py loaddata rooms
+
    ```
+
+### 6. **Создать суперпользователя:**
 
 Приложение будет доступно по адресу http://127.0.0.1:8000/. Nginx проксирует приложение и обслуживает фотографии из `/media/` при `DEBUG=False`.
 
