@@ -1,0 +1,77 @@
+<mxfile host="app.diagrams.net" agent="claude" version="24.7.8">
+  <diagram id="services-layers" name="Схема сервисов">
+    <mxGraphModel dx="900" dy="700" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <mxCell id="cont1" value="Слой представления" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#B4B2A9;dashed=1;verticalAlign=top;align=left;spacingLeft=10;spacingTop=2;fontColor=#888780;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="40" y="124" width="600" height="104" as="geometry"/>
+        </mxCell>
+        <mxCell id="cont2" value="Бизнес-логика" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#B4B2A9;dashed=1;verticalAlign=top;align=left;spacingLeft=10;spacingTop=2;fontColor=#888780;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="40" y="260" width="600" height="104" as="geometry"/>
+        </mxCell>
+        <mxCell id="cont3" value="Инфраструктура — Docker Compose" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#B4B2A9;dashed=1;verticalAlign=top;align=left;spacingLeft=10;spacingTop=2;fontColor=#888780;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="40" y="484" width="600" height="104" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="browser" value="&lt;b&gt;Браузер&lt;/b&gt;&lt;br&gt;&lt;font style='font-size:11px'&gt;Bootstrap 5&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F1EFE8;strokeColor=#8B8A83;fontColor=#444441;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="270" y="40" width="140" height="52" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="p1" value="&lt;b&gt;Маршрутизация&lt;/b&gt;&lt;br&gt;&lt;font style='font-size:11px'&gt;urls.py&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F1EFE8;strokeColor=#8B8A83;fontColor=#444441;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="50" y="156" width="130" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2" value="&lt;b&gt;Представления&lt;/b&gt;&lt;br&gt;&lt;font style='font-size:11px'&gt;FBV и CBV&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F1EFE8;strokeColor=#8B8A83;fontColor=#444441;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="200" y="156" width="130" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="p3" value="&lt;b&gt;Шаблоны&lt;/b&gt;&lt;br&gt;&lt;font style='font-size:11px'&gt;base.html&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F1EFE8;strokeColor=#8B8A83;fontColor=#444441;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="350" y="156" width="130" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="p4" value="&lt;b&gt;Админ-панель&lt;/b&gt;&lt;br&gt;&lt;font style='font-size:11px'&gt;django.admin&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F1EFE8;strokeColor=#8B8A83;fontColor=#444441;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="500" y="156" width="130" height="56" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="b1" value="&lt;b&gt;Формы&lt;/b&gt;&lt;br&gt;&lt;font style='font-size:11px'&gt;валидация&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EEEDFE;strokeColor=#534AB7;fontColor=#3C3489;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="50" y="292" width="130" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="b2" value="&lt;b&gt;Правила брони&lt;/b&gt;&lt;br&gt;&lt;font style='font-size:11px'&gt;пересечения&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EEEDFE;strokeColor=#534AB7;fontColor=#3C3489;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="200" y="292" width="130" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="b3" value="&lt;b&gt;Расписание&lt;/b&gt;&lt;br&gt;&lt;font style='font-size:11px'&gt;таймлайн, слоты&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EEEDFE;strokeColor=#534AB7;fontColor=#3C3489;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="350" y="292" width="130" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="b4" value="&lt;b&gt;Подбор комнат&lt;/b&gt;&lt;br&gt;&lt;font style='font-size:11px'&gt;по параметрам&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EEEDFE;strokeColor=#534AB7;fontColor=#3C3489;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="500" y="292" width="130" height="56" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="orm" value="&lt;b&gt;Django ORM&lt;/b&gt;&lt;br&gt;&lt;font style='font-size:11px'&gt;User, Room, Equipment, Booking&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1F5EE;strokeColor=#0F6E56;fontColor=#085041;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="210" y="396" width="260" height="56" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="i1" value="&lt;b&gt;WhiteNoise&lt;/b&gt;&lt;br&gt;&lt;font style='font-size:11px'&gt;статика&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F1EFE8;strokeColor=#8B8A83;fontColor=#444441;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="85" y="516" width="150" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="i2" value="&lt;b&gt;PostgreSQL&lt;/b&gt;&lt;br&gt;&lt;font style='font-size:11px'&gt;CHECK, EXCLUSION&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1F5EE;strokeColor=#0F6E56;fontColor=#085041;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="265" y="516" width="150" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="i3" value="&lt;b&gt;Media&lt;/b&gt;&lt;br&gt;&lt;font style='font-size:11px'&gt;фото комнат&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F1EFE8;strokeColor=#8B8A83;fontColor=#444441;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="445" y="516" width="150" height="56" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e1" style="html=1;strokeColor=#5F5E5A;endArrow=open;endSize=6;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="browser" target="cont1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e2" style="html=1;strokeColor=#5F5E5A;endArrow=open;endSize=6;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="cont1" target="cont2">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e3" style="html=1;strokeColor=#5F5E5A;endArrow=open;endSize=6;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="cont2" target="orm">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e4" style="html=1;strokeColor=#5F5E5A;endArrow=open;endSize=6;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="orm" target="i2">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

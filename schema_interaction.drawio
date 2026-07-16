@@ -1,0 +1,106 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.3.6 Chrome/140.0.7339.249 Electron/38.8.0 Safari/537.36" version="29.3.6">
+  <diagram id="booking-sequence" name="Схема взаимодействия">
+    <mxGraphModel dx="784" dy="1185" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="h1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F1EFE8;strokeColor=#8B8A83;fontColor=#444441;fontSize=13;" value="&lt;b&gt;Браузер&lt;/b&gt;&lt;br&gt;&lt;font style=&#39;font-size:11px&#39;&gt;пользователь&lt;/font&gt;" vertex="1">
+          <mxGeometry height="48" width="130" x="60" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="h2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EEEDFE;strokeColor=#534AB7;fontColor=#3C3489;fontSize=13;" value="&lt;b&gt;View&lt;/b&gt;&lt;br&gt;&lt;font style=&#39;font-size:11px&#39;&gt;book_room&lt;/font&gt;" vertex="1">
+          <mxGeometry height="48" width="130" x="205" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="h3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EEEDFE;strokeColor=#534AB7;fontColor=#3C3489;fontSize=13;" value="&lt;b&gt;Форма&lt;/b&gt;&lt;br&gt;&lt;font style=&#39;font-size:11px&#39;&gt;BookingForm&lt;/font&gt;" vertex="1">
+          <mxGeometry height="48" width="130" x="350" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="h4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1F5EE;strokeColor=#0F6E56;fontColor=#085041;fontSize=13;" value="&lt;b&gt;База данных&lt;/b&gt;&lt;br&gt;&lt;font style=&#39;font-size:11px&#39;&gt;PostgreSQL&lt;/font&gt;" vertex="1">
+          <mxGeometry height="48" width="130" x="495" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="l1" edge="1" parent="1" style="html=1;strokeColor=#B4B2A9;dashed=1;endArrow=none;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="125" y="88" as="sourcePoint" />
+            <mxPoint x="125" y="420" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="l2" edge="1" parent="1" style="html=1;strokeColor=#B4B2A9;dashed=1;endArrow=none;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="270" y="88" as="sourcePoint" />
+            <mxPoint x="270" y="420" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="l3" edge="1" parent="1" style="html=1;strokeColor=#B4B2A9;dashed=1;endArrow=none;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="415" y="88" as="sourcePoint" />
+            <mxPoint x="415" y="420" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="l4" edge="1" parent="1" style="html=1;strokeColor=#B4B2A9;dashed=1;endArrow=none;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="560" y="88" as="sourcePoint" />
+            <mxPoint x="560" y="420" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m1" edge="1" parent="1" style="html=1;strokeColor=#5F5E5A;endArrow=open;endSize=6;fontSize=11;fontColor=#5F5E5A;verticalAlign=bottom;" value="GET …/book/">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="125" y="122" as="sourcePoint" />
+            <mxPoint x="266" y="122" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m2" edge="1" parent="1" style="html=1;strokeColor=#5F5E5A;endArrow=open;endSize=6;dashed=1;fontSize=11;fontColor=#5F5E5A;verticalAlign=bottom;" value="форма брони">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="270" y="152" as="sourcePoint" />
+            <mxPoint x="129" y="152" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m3" edge="1" parent="1" style="html=1;strokeColor=#5F5E5A;endArrow=open;endSize=6;fontSize=11;fontColor=#5F5E5A;verticalAlign=bottom;" value="POST данные">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="125" y="188" as="sourcePoint" />
+            <mxPoint x="266" y="188" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m4" edge="1" parent="1" style="html=1;strokeColor=#5F5E5A;endArrow=open;endSize=6;fontSize=11;fontColor=#5F5E5A;verticalAlign=bottom;" value="валидация">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="270" y="218" as="sourcePoint" />
+            <mxPoint x="411" y="218" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m5" edge="1" parent="1" style="html=1;strokeColor=#5F5E5A;endArrow=open;endSize=6;fontSize=11;fontColor=#5F5E5A;verticalAlign=bottom;" value="есть пересечения?">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="415" y="248" as="sourcePoint" />
+            <mxPoint x="556" y="248" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m6" edge="1" parent="1" style="html=1;strokeColor=#5F5E5A;endArrow=open;endSize=6;dashed=1;fontSize=11;fontColor=#5F5E5A;verticalAlign=bottom;" value="конфликтов нет">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="560" y="278" as="sourcePoint" />
+            <mxPoint x="419" y="278" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m7" edge="1" parent="1" style="html=1;strokeColor=#5F5E5A;endArrow=open;endSize=6;dashed=1;fontSize=11;fontColor=#5F5E5A;verticalAlign=bottom;" value="данные валидны">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="415" y="308" as="sourcePoint" />
+            <mxPoint x="274" y="308" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m8" edge="1" parent="1" style="html=1;strokeColor=#5F5E5A;endArrow=open;endSize=6;fontSize=11;fontColor=#5F5E5A;verticalAlign=bottom;" value="INSERT в транзакции">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="270" y="338" as="sourcePoint" />
+            <mxPoint x="556" y="338" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m9" edge="1" parent="1" style="html=1;strokeColor=#5F5E5A;endArrow=open;endSize=6;dashed=1;fontSize=11;fontColor=#5F5E5A;verticalAlign=bottom;" value="OK — бронь создана">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="560" y="368" as="sourcePoint" />
+            <mxPoint x="274" y="368" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m10" edge="1" parent="1" style="html=1;strokeColor=#5F5E5A;endArrow=open;endSize=6;dashed=1;fontSize=11;fontColor=#5F5E5A;verticalAlign=bottom;" value="redirect «Мои брони»">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="270" y="398" as="sourcePoint" />
+            <mxPoint x="129" y="398" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
